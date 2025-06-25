@@ -1,0 +1,19 @@
+# Dockerfile.test
+FROM gcc:latest
+RUN apt-get update && apt-get install -y \
+    cmake \
+    g++ \
+    build-essential \
+    libgtest-dev \
+    git \
+    && apt-get clean
+
+RUN cd /usr/src/gtest && cmake . && make && cp lib/*.a /usr/lib
+
+WORKDIR /app
+
+COPY . .
+
+RUN mkdir -p build && cd build && cmake -DBUILD_TESTING=ON .. && make
+
+CMD ["./build/tests"]

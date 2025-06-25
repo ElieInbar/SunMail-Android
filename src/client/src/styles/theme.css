@@ -1,0 +1,144 @@
+ /* Theme variables */
+ :root {
+   --bg-topbar: #f1f3f4;
+
+   --text-color: #202124;
+   --border-color: var(--search-bg-focus);
+   --line: #d4d5d7;
+   --bg-surface: #ffffff;
+   --bg-card: #f8f9fa;
+   --bg-hover-light: rgba(0, 0, 0, 0.07);
+   --bg-hover-dark: rgba(200, 200, 200, 0.15);
+   --bg-hover: var(--bg-hover-light);
+   --text-color-secondary: #5f6368;
+   --text-color-placeholder: #5f6368;
+   --shadow-color: rgba(0, 0, 0, 0.15);
+   --primary: #1a73e8;
+   --primary-hover: #1557b0;
+   --primary-theme: rgba(116, 204, 255, 0.621);
+   --primary-theme-focus: rgb(54, 181, 235);
+
+   --accent: #c1e7fe;
+   --accent-hover: #a3d9ff;
+   --danger: #fc1100;
+   --bg-edit-hover: #58a7df2a;
+   --bg-delete-hover: rgba(220, 53, 69, 0.1);
+   --wave-gradient: linear-gradient(180deg, #aee1ff 60%, #3bb2ff 100%);
+   --wave1: rgba(119, 199, 245, 0.387);
+   --wave2: rgba(87, 189, 248, 0.5);
+   --wave3: rgba(57, 177, 247, 0.5);
+   --active-bg-light: rgba(39, 48, 128, 0.12);
+   --active-bg: var(--active-bg-light);
+    --send-theme: rgba(68, 185, 253, 0.563);
+    --send-theme-hover: rgba(43, 155, 220, 0.496);
+
+
+ }
+
+ .dark-mode {
+   --bg-topbar: #202124;
+   --text-color: #e8eaed;
+   --border-color: var(--search-bg-focus);
+   --line: #5f6368;
+   --bg-surface: #202124;
+   --bg-card: #303134;
+   --bg-hover: var(--bg-hover-dark);
+   --text-color-secondary: #acadae;
+   --text-color-placeholder: #c4c4c4ef;
+   --shadow-color: rgba(0, 0, 0, 0.5);
+   --primary: #77a8f8;
+   --primary-hover: #6296e9;
+   --primary-theme: rgba(138, 105, 191, 0.621);
+   --primary-theme-focus: rgb(168, 137, 215);
+   --accent: #77a8f8;
+   --accent-hover: #5e98f7;
+   --danger: #fa3e3e;
+   --bg-edit-hover: #00145250;
+   --bg-delete-hover: rgba(88, 0, 0, 0.267);
+   --wave-gradient: linear-gradient(180deg, #372557 60%, #2b1055 100%);
+   --wave1: rgba(62, 45, 92, 0.384);
+   --wave2: rgba(58, 35, 94, 0.5);  
+   --wave3: rgba(37, 25, 57, 0.5);
+   --active-bg-dark: rgba(255, 255, 255, 0.08);
+   --active-bg: var(--active-bg-dark);
+    --send-theme: rgba(62, 45, 92, 0.384);
+
+    --send-theme-hover: rgba(72, 47, 108, 0.451);  
+
+  }
+
+
+ :root {
+   --sky-start: #aee1ff;
+   --sky-end: #ffd194;
+   --star-color: #ffffff;
+   --surface-bg: rgba(255, 255, 255, 0.123);
+   --surface-bg-hover: rgba(255, 255, 255, 0.301);
+   --bg-composeMail: rgba(21, 185, 235, 0.322);
+   --bg-composeMail-hover: rgba(18, 154, 196, 0.281);
+   --bg-mailRow-hover: rgba(165, 165, 165, 0.274);
+   --bg-mailRow-unread: rgba(255, 255, 255, 0.322);
+   --search-bg: rgba(255, 255, 255, 0.342);
+   --search-bg-focus: rgb(90, 170, 216);
+   --username-shadow-color: rgba(0, 0, 0, 0.507);
+   --sun-beam-color: rgba(255, 255, 255, 0.55);
+   --ripple-color: rgba(0, 0, 0, 0.185);
+   --shadow-color-theme: rgba(0, 0, 0, 0.267);
+    --auth: rgba(255, 255, 255, 0.1);
+   --theme-background: linear-gradient(var(--sky-start),var(--sky-end));
+   --gmail-card-bg:rgba(182, 228, 255, 0.42);
+   --gmail-header-bg: rgba(0, 121, 191, 0.42);
+   --gmail-addLabel-text: rgba(21, 185, 235, 0.611);
+   --gmail-border: rgba(0, 0, 0, 0.15);
+   --compose: var(--theme-background);
+   --background: #f1f3f4;
+ }
+
+ .dark-mode {
+   --sky-start: #372557;
+   --sky-end: #ff5f6d;
+   --star-color: rgba(255, 255, 255, .85);
+   --surface-bg: rgba(32, 32, 32, 0.123);
+   --surface-bg-hover: rgba(32, 32, 32, 0.493);
+   --bg-composeMail: rgba(124, 85, 187, 0.534);
+   --bg-composeMail-hover: rgba(97, 61, 156, 0.534);
+   --bg-mailRow-hover: rgba(148, 148, 148, 0.347);
+   --bg-mailRow-unread: rgba(119, 119, 119, 0.315);
+   --search-bg: rgba(111, 111, 111, 0.215);
+   --search-bg-focus: rgb(142, 111, 190);
+   --name-shadow-color: rgba(255, 255, 255, 0.342);
+   --sun-beam-color: transparent;
+   --ripple-color: rgba(255, 255, 255, .18);
+   --shadow-color-theme: rgba(255, 255, 255, 0.267);
+   --auth: rgba(0, 0, 0, 0.1);
+   --theme-background: linear-gradient(var(--sky-start),var(--sky-end));
+  --gmail-card-bg:rgba(40, 30, 75, 0.42);
+  --gmail-header-bg: rgba(60, 40, 100, 0.24);
+  --gmail-border: rgba(255, 255, 255, 0.15);
+  --gmail-addLabel-text: rgba(78, 24, 126, 0.989);
+  --background: #181111;
+  --compose: var(--theme-background);
+  }
+
+ :root {
+   --input-bg: rgba(255, 255, 255, 0.126);
+   --input-bg-focus: rgba(255, 255, 255, .28);
+   --auto: rgba(255, 255, 255, 0);
+   --auth-btn-bg: #82b6ff;
+   --auth-btn-bg-hover: #6ba7ff;
+   --upload-btn-bg: #83c3ff;
+   --upload-btn-bg-hover: #6db4f2;
+   --upload-btn-bg-border: #83c3ff;
+ }
+
+ .dark-mode {
+   --input-bg: rgba(0, 0, 0, 0.121);
+   --input-bg-focus: rgba(0, 0, 0, 0.196);
+   --auto: rgba(255, 255, 255, 0);
+
+   --auth-btn-bg: rgb(121, 78, 189);
+   --auth-btn-bg-hover: rgb(114, 72, 181);
+   --upload-btn-bg: #8d6bff;
+   --upload-btn-bg-hover: #8267ec;
+   --upload-btn-bg-border: #784fffab;
+ }

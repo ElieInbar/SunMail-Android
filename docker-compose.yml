@@ -1,0 +1,58 @@
+services:
+  server:
+    build:
+      context: ./src/cpp
+      dockerfile: Dockerfile.server
+    container_name: bloomfilter-server
+    networks:
+      - net
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - PORT=${PORT}
+      - ARRAY_SIZE=${ARRAY_SIZE}
+      - HASH_REPEATS=${HASH_REPEATS}
+    env_file:
+      - ./src/cpp/.env
+    entrypoint:
+      - sh
+      - -c
+      - ./build/app $PORT $ARRAY_SIZE $HASH_REPEATS
+
+  api:
+    build:
+      context: ./src/api
+      dockerfile: Dockerfile
+    container_name: node-api
+    depends_on:
+      - server
+    networks:
+      - net
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./src/api/src/.env
+    entrypoint:
+      - sh
+      - -c
+      - node src/gmail.js
+
+  client:
+    build:
+      context: ./src/client
+      dockerfile: Dockerfile
+    container_name: client
+    ports:
+      - "3000:3000"
+    networks:
+      - net
+    depends_on:
+      - api
+    command: npm start
+
+volumes:
+  data_volume:
+
+networks:
+  net:
+    driver: bridge

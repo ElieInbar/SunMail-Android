@@ -1,0 +1,17 @@
+.compose-mail-btn{
+  display:flex;
+  align-items:center;
+  width:90%;
+  margin:12px auto 8px;
+  padding:10px 12px;
+  background:var(--accent);
+  color: var(--text-color);
+  border:none;
+  border-radius:24px;
+  font-size:1rem;
+  cursor:pointer;
+  transition:background .2s;
+  gap:8px;
+}
+.sidebar.collapsed .compose-mail-btn span{display:none;}
+.compose-mail-btn:hover{background:var(--accent-hover);}

@@ -1,0 +1,25 @@
+.btn-ripple{
+  position: relative;         
+  overflow: hidden;          
+}
+
+.btn-ripple::after{
+  content:"";
+  position:absolute;
+  top:50%; left:50%;
+  width:12px; height:12px;    
+  border-radius:50%;
+  pointer-events:none;
+  background: var(--ripple-color);
+  transform: translate(-50%,-50%) scale(0);
+  opacity: .75;
+  transition: transform .45s cubic-bezier(.4,0,.2,1),
+              opacity   .45s linear;
+}
+
+.btn-ripple:active::after{
+  transform: translate(-50%,-50%) scale(18);  
+  opacity: 0;
+  transition: transform .45s cubic-bezier(.4,0,.2,1),
+              opacity   .45s linear;
+}

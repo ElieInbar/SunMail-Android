@@ -1,0 +1,90 @@
+.user-details-popup {
+  position: fixed;
+  top: 60px; /* Below the topbar */
+  right: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  z-index: 910000;
+  width: 300px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  color: var(--search-bg-focus);
+  font-family: 'Google Sans', Roboto, sans-serif;
+  animation: popupFadeIn 0.2s ease-out;
+  text-shadow: 0 1px 2px var(--search-bg-focus);
+
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--search-bg-focus);
+
+}
+
+.popup-profile-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.popup-profile-fallback {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  color: var(--search-bg-focus);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-shadow: 0 1px 3px var(--shadow-color-theme);
+
+}
+
+.popup-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-user-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.popup-user-email {
+  font-size: 0.95rem;
+  color: var(--search-bg-focus);
+  margin-top: 2px;
+}
+
+.popup-body p {
+  margin: 0 0 10px 0;
+  font-size: 0.98rem;
+  color: var(--text-color);
+}
+
+.popup-body p strong {
+  color: var(--text-color);
+  margin-right: 5px;
+} 

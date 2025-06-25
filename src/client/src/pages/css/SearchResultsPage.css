@@ -1,0 +1,39 @@
+/* src/client/src/pages/css/SearchResultsPage.css */
+
+.search-results-container {
+  padding: 20px;
+  background-color: var(--surface-bg);
+  color: var(--text-color);
+  flex: 1;
+  overflow-y: auto;
+}
+
+.search-results-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--text-color);
+}
+
+.search-results-container p {
+  font-size: 16px;
+  color: var(--text-color-secondary);
+}
+
+.mails-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Space between mail items */
+}
+
+/* Ensure mail items have consistent styling */
+.mails-list .mailRow {
+  background-color: var(--bg-mailRow-unread);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: background-color 0.2s;
+}
+
+.mails-list .mailRow:hover {
+  background-color: var(--bg-hover);
+} 

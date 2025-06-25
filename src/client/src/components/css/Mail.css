@@ -1,0 +1,109 @@
+.mailRow {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding: 0 40px 0 16px;
+    min-height: 48px;
+    font-family: "Roboto", Arial, sans-serif;
+    font-size: 15px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-radius: 6px;
+    background-color: var(--surface-bg);
+}
+
+.mailRow.read {
+    font-weight: 400;
+}
+
+.mailRow.unread {
+    background: var(--bg-mailRow-unread);
+    font-weight: 700;
+}
+
+.mailRow.unread:hover,
+.mailRow.read:hover {
+    background: var(--bg-mailRow-hover);
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.starIcon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 0px 0px 10px;
+    font-size: 18px;
+    color: var(--text-color-secondary);
+}
+
+#starOn {
+    color: yellow;
+}
+
+.importantIcon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 13px 10px 10px 10px;
+    font-size: 18px;
+    color: var(--text-color-secondary);
+}
+
+#importantOn {
+    color: yellow;
+}
+
+.deleteIcon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 10px 0px 10px;
+    font-size: 18px;
+    color: var(--text-color-secondary);
+    transition: color 0.2s;
+}
+
+.deleteIcon:hover {
+    color: var(--danger);
+}
+
+.mailSender {
+    flex-shrink: 0;
+    color: var(--text-color);
+    min-width: 170px;
+    max-width: 230px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 32px;
+}
+
+.mailContent {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+}
+
+.mailSubject {
+    margin-right: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 350px;
+}
+
+.mailBody {
+    color: var(--text-color-secondary);
+    overflow: hidden;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}

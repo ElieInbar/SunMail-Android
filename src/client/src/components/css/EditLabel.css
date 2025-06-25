@@ -1,0 +1,54 @@
+.editLabelForm {
+  right: -100px;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  min-width: 200px;
+}
+
+.editLabelForm input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  color: var(--text-color);
+}
+
+.editLabelForm input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.editLabelForm input::placeholder {
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.editButtons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cancelButtonEdit,
+.saveButtonEdit {
+  background: var(--bg-card);
+  color: var(--primary);
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.saveButtonEdit:hover,
+.cancelButtonEdit:hover {
+  background-color: var(--bg-hover);
+  border-color: transparent;
+  /* transition: background-color 0.2s; */
+}

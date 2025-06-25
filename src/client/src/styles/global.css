@@ -1,0 +1,87 @@
+/* src/client/src/styles/global.css */
+@import './theme.css';
+@import './sunset_scene.css';
+@import './ripple.css';
+
+body, html {
+  color: var(--text-color);
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-y: auto;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  backdrop-filter: blur(2px);
+  z-index: 1;
+}
+
+.topbar {
+  height: 60px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;  
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  background: transparent;
+}
+
+.sidebar {
+  background: transparent;
+  height: 100%;
+  overflow-x: hidden;
+
+}
+
+.inbox-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background: transparent;
+}
+
+.topbar,
+.sidebar {
+  background: rgba(0,0,0,0.15);         
+  backdrop-filter: blur(6px) brightness(0.6);
+  z-index: 1;
+  transition: background-color .2s ease, backdrop-filter .2s ease;
+}
+
+.surface{
+  background       : var(--surface-bg);
+  backdrop-filter  : blur(8px);      
+  box-shadow       : 0 1px 2px var(--shadow-color);
+  transition       : background .25s ease;
+}
+.btn-float{
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.btn-float:hover{
+  transform: translateY(-0.2px) scale(1.001);
+  box-shadow: 0 4px 12px rgba(0,0,0,.18);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--auto) inset !important;
+  -webkit-text-fill-color: var(--text-color) !important;
+  caret-color: var(--text-color);
+  transition: background-color 5000s ease-in-out 0s;
+}

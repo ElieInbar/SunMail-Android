@@ -1,0 +1,37 @@
+.button {
+    background: none;
+    border:none;
+    transition: background-color 0.2s, color 0.2s, border 0.2s, border-radius 0.2s;
+    color: var(--text-color);
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 8px 12px;
+    font-size: 16px;
+}
+.button:hover {
+    border-radius: 50%;
+    background-color: var(--bg-hover);
+}
+
+#inputLabel{
+    width:80%;
+    margin-top: 10px;
+    font-family: inherit;
+    background-color: var(--surface-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    box-shadow: 1px 1px 1px var(--shadow-color);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+#inputLabel:focus {
+    outline: none;
+    border-color: var(--primary);
+    color: var(--text-color);
+}
+
+#inputLabel::placeholder {
+    color: var(--text-color);
+    opacity: 0.7;
+}

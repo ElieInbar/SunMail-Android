@@ -1,0 +1,121 @@
+.label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 5px;
+    border-radius: 5px;
+    background-color: var(--surface-bg);
+    cursor: pointer;
+}
+
+.label:hover {
+    background-color: var(--bg-hover);
+}
+
+.labelName {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.labelIcon {
+    position: relative;
+}
+
+.labelIcon>button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+}
+
+.labelIcon:hover>.dots {
+    background-color: var(--bg-hover);
+}
+
+.dots{
+    font-size:20px
+}
+
+.label:hover .labelIcon button {
+    visibility: visible;
+}
+
+.popupMenu {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: -10px;
+    background: var(--bg-surface);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    z-index: 1000;
+    min-width: 140px;
+    overflow: visible;
+    animation: popupFadeIn 0.2s ease-out;
+    border: 1px solid none;  
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.popupOption {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid var(--line);
+}
+
+.popupOption:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+
+}
+
+.popupOption:last-child {
+    border-bottom: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.popupOption:hover {
+    background-color: var(--bg-card);
+}
+
+.editOption {
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.editOption:hover {
+    background-color: var(--bg-edit-hover);
+}
+
+.deleteOption {
+    color: var(--danger);
+    font-weight: 500;
+}
+
+.deleteOption:hover {
+    background-color: var(--bg-delete-hover);
+}

@@ -1,0 +1,8 @@
+# Dockerfile for the client application
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY . .
+
+ENTRYPOINT ["python3", "src/Server/client.py"]

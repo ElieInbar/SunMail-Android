@@ -1,0 +1,331 @@
+html,
+body {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+.mail-container {
+  background: var(--gmail-bg);
+  min-height: 100%;
+  font-family: 'Roboto', Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* Center card */
+.mail-container {
+  background: var(--gmail-bg);
+  min-height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  
+}
+
+.gmail-header {
+  background: var(--gmail-header-bg);
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--gmail-card-bg);
+  z-index: 10;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  gap: 18px;
+  border-radius: 22px 22px 0 0;
+  padding: 0 32px;
+  min-height: 54px;
+  overflow: hidden;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: var(--gmail-muted);
+  border-radius: 50%;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+  margin-left: -12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.back-button:hover {
+  background-color: var(--bg-hover);
+}
+
+.gmail-card {
+  background: var(--gmail-card-bg);
+  box-shadow: 0 6px 28px 2px rgba(0,0,0,0.15), 0 1.5px 7px 0 rgba(0,0,0,0.14);
+  border-radius: 22px;
+  border: 1.2px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);  
+  margin: 38px auto 0 auto;
+  width: 92%;
+  min-height: 340px;
+  transition: background 0.25s;
+  padding-bottom: 18px; 
+  overflow: visible;
+
+}
+
+.subject {
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--gmail-text);
+  flex: 1 1 0%;
+  margin: 0;
+  letter-spacing: 0.01rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-top: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 0;
+  flex-shrink: 0;
+}
+
+/* From / infos */
+.mail-view {
+  padding: 36px 40px 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 100%;
+  overflow: auto;
+  
+  background: transparent;
+  border-radius: 0 0 22px 22px;
+  padding: 32px 32px 0 32px;
+  min-height: 230px;
+  transition: background 0.25s;
+  box-shadow: 0 2px 4px var(--gmail-shadow);
+}
+
+.from {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  background: none;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.from-img,
+.from-fallback {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 12px;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  background: var(--surface-bg-hover);
+  color: var(--search-bg-focus);
+  font-weight: bold;
+  text-shadow: 0 1px 3px var(--shadow-color-theme);
+}
+
+.from-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.from-name {
+  font-size: 1.03rem;
+  font-weight: 500;
+  color: var(--gmail-text);
+  margin: 0;
+  font-weight: bold;
+}
+
+.from-address {
+  font-size: 0.99rem;
+  color: var(--gmail-muted);
+  margin-top: 2px;
+  margin-bottom: 0;
+}
+
+.mail-body {
+  line-height: 1.7;
+  color: var(--text-color);
+  white-space: pre-wrap;
+  font-family: "Roboto", "Arial", sans-serif;
+  word-break: break-word;
+  background: none;
+  margin-top: 18px;
+  padding: 20px 0 0 0;
+  border-top: 1px solid var(--gmail-border);
+  font-size: 1.11rem;
+
+}
+
+.add-label-btn {
+  background: var(--bg-composeMail);
+  color: #fff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background 0.13s, box-shadow 0.12s;
+  outline: none;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+}
+
+.add-label-btn:hover,
+.add-label-btn:focus {
+  background:  var(--bg-composeMail-hover);
+}
+
+.chip-label-text {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+  line-height: 1;      
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.mail-labels {
+  margin-top: 6px;
+  margin-bottom: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mail-label-chip {
+  background: #e8f0fe;
+  color: var(--gmail-addLabel-text);
+  font-size: 0.96em;
+  font-weight: 500;
+  border-radius: 16px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 2px;
+  margin-bottom: 2px;
+  gap: 2px;
+  height: 30px; 
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.chip-remove-btn {
+  display: flex;          
+  align-items: center; 
+  justify-content: right;
+  background: none;
+  border: none;
+  color: #8a9099;
+  font-size: 1.08rem;
+  cursor: pointer;
+  border-radius: 50%;
+  margin-left: 2px;       
+  height: 24px;          
+  width: 24px;
+  transition: background 0.1s, color 0.1s;
+  padding: 0;              
+}
+
+
+.chip-remove-btn:hover {
+  background: #e4e6e8;
+  color: var(--gmail-addLabel-text);
+}
+
+@media (max-width: 700px) {
+  .mail-view,
+  .gmail-header {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .gmail-header {
+    gap: 6px;
+    padding: 0 6px;
+    min-height: 44px;
+  }
+  .subject {
+    font-size: 1.05rem;
+    padding: 0;
+  }
+  .add-label-btn {
+    padding: 5px 8px;
+    font-size: 0.96em;
+    min-width: 0;
+    max-width: 99vw;
+  }
+}
+
+.mail-actions {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0 10px 0;
+}
+
+.reply-btn,
+.forward-btn {
+  background: #e8f0fe;
+  color: var(--gmail-addLabel-text);
+  border: 1px solid #c7d0e1;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.reply-btn:hover,
+.forward-btn:hover {
+  background-color: #d2e3fc;
+}
+
+.bi-arrow-left-short{
+  padding-top: 2px;
+  font-size: 43px;
+}
