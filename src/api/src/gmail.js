@@ -5,6 +5,14 @@ const express = require('express')
 var app = express()
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
+
+require('custom-env').env(process.env.NODE_ENV, './config');
+mongoose.connect(process.env.CONNECTION_STRING,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
 
 const corsOptions = {
   origin: "http://localhost:3000",
