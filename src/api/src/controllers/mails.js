@@ -2,8 +2,7 @@
 
 const Mail = require('../models/mails');
 const User = require('../models/users');
-const Label = require('../models/labels')
-const { validateUrls } = require('../utils/urlUtils');
+const labelService = require('../services/labels')
 
 /**
  * Helper: resolve an email address to a userId.
@@ -19,15 +18,16 @@ function resolveToUserId(email) {
  * GET /api/mails/label/:labelName
  * Return the last 50 mails for this user (inbox).
  */
-exports.getAllMailsOfLabel = (req, res) => {
+exports.getAllMailsOfLabel = async (req, res) => {
   const userId = req.id
   if (!userId) return res.status(404).json({ error: 'User not found' }).end();
 
   const labelName = req.params.labelName;
   if (!labelName) return res.status(404).json({ error: 'Label name not found' }).end();
-  const label = Label.getLabelByName(labelName, userId)
-  if (!label) return res.status(404).json({ error: 'Label not found' }).end();
-
+  const labelRet = (await labelService.getLabelByName(labelName, userId));
+  if (!labelRet) return res.status(404).json({ error: 'Label not found' }).end();
+  const label = labelRet.toJSON();
+  
   const mails = Mail.getLast50(userId, label);
   if (!mails) return res.status(404).json({ error: 'Mail not found' }).end();
 
