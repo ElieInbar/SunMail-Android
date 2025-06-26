@@ -1,6 +1,6 @@
 const tokens = require('../models/tokens')
 
-exports.login = (req, res) => {
+exports.login = async(req, res) => {
     const { email, password } = req.body;
     if (!email) {
         return res.status(400).json({ error: 'Email is required' })
@@ -8,7 +8,7 @@ exports.login = (req, res) => {
     if (!password) {
         return res.status(400).json({ error: 'Password is required' })
     }
-    const jwtRes = tokens.login(email, password);
+    const jwtRes =  await tokens.login(email, password);
     if (jwtRes === -1) {
         return res.status(400).json({ error: 'Email or Password incorrect' })
     }

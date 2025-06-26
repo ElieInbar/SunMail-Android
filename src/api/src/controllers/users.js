@@ -1,4 +1,5 @@
-const Users = require('../models/users');
+const Users = require('../services/users');
+const path = require('path');
 const fs = require('fs');
 
 const NAME_RE = /^[A-Za-z\u0590-\u05FF](?:[A-Za-z\u0590-\u05FF \-]{0,58}[A-Za-z\u0590-\u05FF])$/u;
@@ -23,19 +24,41 @@ function parseBirthDate(str) {
     return valid ? date.toISOString().slice(0, 10) : null;
 }
 
-
-exports.getAllUsers = (req, res) => {
-    res.status(200).json(Users.getAllUsers());
+function deleteUploadedFile(file) {
+  if (file) {
+    const filePath = path.join(__dirname, '..', 'uploads', file.filename);
+    fs.unlink(filePath, (err) => {
+      if (err) console.error("⚠️ Failed to delete uploaded file:", err.message);
+    });
+  }
 }
 
-exports.getUserById = (req, res) => {
-    const user = Users.getUserById(req.params.id);
-    if (!user)
-        return res.status(404).json({ error: 'User not found' });
-    res.status(200).json(user);
+function rejectWithError(res, file, message) {
+  deleteUploadedFile(file);
+  return res.status(400).json({ error: message });
+}
+
+const getAllUsers = async (_, res) => {
+    try {
+        const users = await Users.getAllUsers();
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ error: error.message || 'Failed to retrieve users' });
+    }
+}
+
+const getUserById = async (req, res) => {
+    try {
+        const user = await Users.getUserById(req.params.id);
+        if (!user)
+            return res.status(404).json({ error: 'User not found' });
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message || 'Failed to retrieve user' });
+    }
 };
 
-exports.createUser = (req, res) => {
+const createUser = async (req, res) => {
     const { first_name, last_name, gender, birthDate, userName, password, confirmPassword } = req.body;
 
     let profilePicture = null;
@@ -44,55 +67,62 @@ exports.createUser = (req, res) => {
     }
 
     try {
-        if (!first_name) return res.status(400).json({ error: 'first name is required' });
-        if (!userName) return res.status(400).json({ error: 'user name is required' });
-        if (!birthDate) return res.status(400).json({ error: 'birth date is required' });
-        if (!gender) return res.status(400).json({ error: 'gender is required' });
-        if (!password) return res.status(400).json({ error: 'password is required' });
+        if (!first_name) return rejectWithError(res, req.file, 'first name is required');
+        if (!userName) return rejectWithError(res, req.file, 'user name is required');
+        if (!birthDate) return rejectWithError(res, req.file, 'birth date is required');
+        if (!gender) return rejectWithError(res, req.file, 'gender is required');
+        if (!password) return rejectWithError(res, req.file, 'password is required');
         if (password !== confirmPassword) {
-            return res.status(400).json({ error: 'Passwords do not match' });
+            return rejectWithError(res, req.file, 'Passwords do not match');
         }
         if (!isValidName(first_name))
-            return res.status(400).json({ error: 'first name must contain only letters and be at least 2 characters long' });
+            return rejectWithError(res, req.file, 'first name must contain only letters and be at least 2 characters long');
 
         if (last_name && !isValidName(last_name))
-            return res.status(400).json({ error: 'last name must contain only letters and be at least 2 characters long' });
+            return rejectWithError(res, req.file, 'last name must contain only letters and be at least 2 characters long');
 
         const isoBirth = parseBirthDate(birthDate);
         if (!isoBirth)
-            return res.status(400).json({ error: 'Birth Date must be a valid past date' });
+            return rejectWithError(res, req.file, 'Birth Date must be a valid past date');
 
         if (!isValidGender(gender))
-            return res.status(400).json({ error: 'Gender must be male or female' });
+            return rejectWithError(res, req.file, 'Gender must be male or female');
 
         if (!isValidUsername(userName))
-            return res.status(400).json({ error: 'user name must be 6-30 characters long and contain only letters or digits or periods only, with no leading/trailing/double dot' });
+            return rejectWithError(res, req.file, 'user name must be 6-30 characters long and contain only letters or digits or periods only, with no leading/trailing/double dot');
 
         if (!isValidPassword(password))
-            return res.status(400).json({ error: 'Password must be 8-100 chars, contain at least one letter and one digit, and may include common symbols' });
+            return rejectWithError(res, req.file, 'Password must be 8-100 chars, contain at least one letter and one digit, and may include common symbols');
 
-        const email = `${userName}@sunmail.com`;
-        const exists = Users.getAllUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
+        const userNameLower = userName.toLowerCase().trim();
+        const email = `${userNameLower}@sunmail.com`;
+        const exists = await Users.getUserByUserName(userNameLower);
         if (exists)
-            return res.status(400).json({ error: 'Username already exists' });
+            return rejectWithError(res, req.file, 'Username already exists');
 
-        const newUser = Users.createUser(first_name, last_name, gender, birthDate, userName, email, password, profilePicture);
+        const newUser = await Users.createUser(first_name, last_name, gender, birthDate, userNameLower, email, password, profilePicture);
         res.status(201).location(`/api/users/${newUser.id}`).end();
 
     } catch (error) {
-        if (req.file) {
-            fs.unlink(req.file.path, (err) => {
-                if (err) console.error('Error deleting uploaded file:', err);
-            });
-        }
+        if (req.file)
+            fs.unlink(req.file.path, ()=> {});
         res.status(500).json({ error: error.message || 'Registration failed' });
     }
 };
 
-exports.getUserByUserName = (req, res) => {
-    const user = Users.getUserByUserName(req.params.userName);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    // Remove password before sending
-    const { password, ...safe } = user;
-    res.status(200).json(safe);
+const getUserByUserName = async (req, res) => {
+    try {
+        const user = await Users.getUserByUserName(req.params.userName);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message || 'Failed to retrieve user' });
+    }
 };
+
+module.exports = {
+    getAllUsers,
+    getUserById,
+    createUser,
+    getUserByUserName
+};  
