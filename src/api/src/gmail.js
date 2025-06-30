@@ -7,7 +7,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 
-require('custom-env').env(process.env.NODE_ENV, path.join(__dirname, 'config'));
+// Use 'local' environment by default if NODE_ENV is not set
+const environment = process.env.NODE_ENV || 'local';
+require('custom-env').env(environment, path.join(__dirname, 'config'));
 mongoose.connect(process.env.CONNECTION_STRING);
 
 const corsOptions = {
