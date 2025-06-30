@@ -58,15 +58,20 @@ exports.deleteLabelById = async (req, res) => {
 }
 
 exports.getLabelByName = async (req, res) => {
-    const userId = req.id;
-    if (!userId) return res.status(404).json({ error: 'User not found' }).end();
+    try {
+        const userId = req.id;
+        if (!userId) return res.status(401).json({ error: 'User not authenticated' });
 
-    const labelName = req.params.name;
-    if (!labelName) return res.status(404).json({ error: 'Label name not found' }).end();
+        const labelName = req.params.name;
+        if (!labelName) return res.status(400).json({ error: 'Label name is required' });
 
-    const label = await labelService.getLabelByName(name, userId);
-    if (!label) {
-        return res.status(404).json({ error: 'Label not found' });
+        const label = await labelService.getLabelByName(labelName, userId);
+        if (!label) {
+            return res.status(404).json({ error: 'Label not found' });
+        }
+        return res.status(200).json(label);
+    } catch (error) {
+        console.error('Error getting label by name:', error);
+        return res.status(500).json({ error: 'Internal server error' });
     }
-    return res.status(200).json(label).end()
-}
+};
