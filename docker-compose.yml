@@ -1,4 +1,19 @@
 services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: sunmail-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: SunMailDB
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - net
+
+  # C++ Bloom Filter Server
   server:
     build:
       context: ./src/cpp
@@ -19,6 +34,7 @@ services:
       - -c
       - ./build/app $PORT $ARRAY_SIZE $HASH_REPEATS
 
+  # Node.js API
   api:
     build:
       context: ./src/api
@@ -26,17 +42,19 @@ services:
     container_name: node-api
     depends_on:
       - server
+      - mongodb
     networks:
       - net
     ports:
       - "8080:8080"
-    env_file:
-      - ./src/api/src/.env
+    environment:
+      - NODE_ENV=docker
     entrypoint:
       - sh
       - -c
       - node src/gmail.js
 
+  # React Client
   client:
     build:
       context: ./src/client
@@ -51,6 +69,7 @@ services:
     command: npm start
 
 volumes:
+  mongodb_data:
   data_volume:
 
 networks:

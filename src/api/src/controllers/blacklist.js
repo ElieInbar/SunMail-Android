@@ -21,7 +21,7 @@ async function createBlacklistEntry(req, res) {
 
     // 1) send "POST <url>" to the C++ server
     const response = await sendRawCommand(`POST ${url}`);
-    
+
     // 2) check if it's a success (201 or 200 at the start)
     if (/^201\b/.test(response)) {
       // Add to MongoDB
