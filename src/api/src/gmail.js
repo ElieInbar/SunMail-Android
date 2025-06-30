@@ -7,12 +7,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 
-require('custom-env').env(process.env.NODE_ENV, './config');
-mongoose.connect(process.env.CONNECTION_STRING,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
+require('custom-env').env(process.env.NODE_ENV, path.join(__dirname, 'config'));
+mongoose.connect(process.env.CONNECTION_STRING);
 
 const corsOptions = {
   origin: "http://localhost:3000",
@@ -57,4 +53,9 @@ app.all('/{*any}', (req, res) => {
 });
 
 app.set('view engine', 'ejs');
-app.listen(8080)
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📧 SunMail API ready at http://localhost:${PORT}`);
+});
