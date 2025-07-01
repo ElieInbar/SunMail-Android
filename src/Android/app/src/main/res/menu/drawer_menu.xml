@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_inbox"
+            android:icon="@drawable/ic_inbox"
+            android:title="Inbox" />
+        <item
+            android:id="@+id/nav_starred"
+            android:icon="@drawable/ic_starred"
+            android:title="Starred" />
+        <item
+            android:id="@+id/nav_important"
+            android:icon="@drawable/ic_important"
+            android:title="Important" />
+        <item
+            android:id="@+id/nav_sent"
+            android:icon="@drawable/ic_sent"
+            android:title="Sent" />
+        <item
+            android:id="@+id/nav_drafts"
+            android:icon="@drawable/ic_drafts"
+            android:title="Drafts" />
+        <item
+            android:id="@+id/nav_all_mail"
+            android:icon="@drawable/ic_all_mail"
+            android:title="All Mail" />
+        <item
+            android:id="@+id/nav_spam"
+            android:icon="@drawable/ic_spam"
+            android:title="Spam" />
+        <item
+            android:id="@+id/nav_trash"
+            android:icon="@drawable/ic_trash"
+            android:title="Trash" />
+    </group>
+
+    <item android:title="Other">
+        <menu>
+            <item
+                android:id="@+id/nav_theme"
+                android:icon="@drawable/ic_theme"
+                android:title="Theme" />
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@drawable/ic_help"
+                android:title="Help" />
+        </menu>
+    </item>
+</menu>

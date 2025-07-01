@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Main layout for the email composition activity.
+    Uses ConstraintLayout as the main container to organize UI elements.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="16dp"
+    tools:context=".ComposeActivity">
+
+    <!--
+        Custom toolbar placed at the top of the screen.
+        Contains a back button on the left, a flexible space, and a send button on the right.
+    -->
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!--
+            Back button allowing the user to return to the previous screen.
+            Placed on the left in the toolbar.
+        -->
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_arrow_back" />
+
+        <!--
+            Flexible space that pushes the send button to the right.
+            Used to space out elements in the toolbar.
+        -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!--
+            Send button allowing the user to send the email.
+            Placed on the right in the toolbar.
+        -->
+        <ImageButton
+            android:id="@+id/send_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_sent" />
+
+    </LinearLayout>
+
+    <!--
+        Main scrollable content area.
+        Contains input fields for recipient, subject, and message body.
+        Allows scrolling if the screen is too small.
+    -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <!--
+            Vertical container to organize input fields and separators.
+        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!--
+                Input field for the recipient's email address.
+                User enters the address to send the email to.
+            -->
+            <EditText
+                android:id="@+id/to_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="To"
+                android:inputType="textEmailAddress"
+                android:background="@null"
+                android:padding="16dp" />
+
+            <!--
+                Visual separator line between recipient and subject fields.
+            -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0" />
+
+            <!--
+                Input field for the email subject.
+                User enters the subject of the message here.
+            -->
+            <EditText
+                android:id="@+id/subject_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Subject"
+                android:inputType="text"
+                android:background="@null"
+                android:padding="16dp" />
+
+            <!--
+                Visual separator line between subject and body fields.
+            -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0" />
+
+            <!--
+                Input field for the message body.
+                Allows multiline text input for composing the email.
+            -->
+            <EditText
+                android:id="@+id/body_field"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:background="@null"
+                android:gravity="top"
+                android:hint="Compose email"
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="15"
+                android:padding="12dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
