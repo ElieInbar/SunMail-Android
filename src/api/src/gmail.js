@@ -55,7 +55,4 @@ app.all('/{*any}', (req, res) => {
 app.set('view engine', 'ejs');
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📧 SunMail API ready at http://localhost:${PORT}`);
-});
+app.listen(PORT);
