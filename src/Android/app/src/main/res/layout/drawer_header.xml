@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    This file defines the custom header for the navigation drawer.
+    It uses a vertical LinearLayout to stack elements from top to bottom.
+    The header displays a circular avatar, the app (or user) name, and the email address.
+    The background uses a custom image and the content is bottom-aligned with padding for spacing.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/drawer_header_bg"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="bottom">
+
+    <!--
+        RelativeLayout to position the SunMail icon on the left and the profile avatar on the right
+    -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <!--
+            This ImageView displays the SunMail app icon.
+            The icon is positioned on the left side of the layout.
+            Increased size for better visibility.
+        -->
+        <ImageView
+            android:id="@+id/sunmail_icon"
+            android:src="@drawable/ic_sunmail"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:layout_alignParentStart="true"
+            android:scaleType="centerInside"
+            android:padding="8dp" />
+
+        <!--
+            This TextView displays the letter "E" representing the user profile.
+            The letter is shown in a colored circle as a simple avatar.
+            Positioned fully to the right of the layout.
+        -->
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/profile_circle_orange"
+            android:gravity="center"
+            android:text="E"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true" />
+
+    </RelativeLayout>
+
+    <!--
+        This TextView displays the user's email address.
+        The text is smaller and slightly transparent (alpha 0.8) to indicate secondary information.
+        It is placed below the app or user name.
+    -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="user@sunmail.com"
+        android:textColor="#ffffff"
+        android:textSize="14sp"
+        android:alpha="0.8" />
+
+</LinearLayout>
