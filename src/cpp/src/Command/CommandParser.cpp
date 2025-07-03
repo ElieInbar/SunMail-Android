@@ -39,7 +39,7 @@ std::string CommandParser::getURL() const {
 }
 
 bool CommandParser::checkURL(std::string url) {
-    std::regex pattern(R"(^((https:\/\/|http:\/\/)?(www\.)?)(?!w{1,2}\.)(?!w{4,}\.)[a-zA-Z0-9]{1,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?$)");
+ std::regex pattern(R"(^(https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/.*)?$)");
 
     return std::regex_match(url, pattern);
 }
