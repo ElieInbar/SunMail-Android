@@ -47,5 +47,28 @@ const getLabelByName = async (name, userId) => {
     return await Label.findOne({ name, userId });
 }
 
+/**
+ * Get all mails that have a specific label
+ */
+const getLabelMails = async (labelId, userId) => {
+    try {
+        const Mail = require('../models/mails');
 
-module.exports = { createLabel, getLabelById, getLabels, patchLabelById, deleteLabelById, getLabelByName }
+        const label = await Label.findOne({ id: labelId, userId });
+        if (!label) return null;
+
+        const mails = await Mail.find({
+            $or: [{ from: userId }, { to: userId }],
+            labels: label._id
+        })
+        .populate('labels')
+        .sort({ date: -1 });
+
+        return mails;
+    } catch (error) {
+        console.error('Error getting label mails:', error);
+        throw error;
+    }
+};
+
+module.exports = { createLabel, getLabelById, getLabels, patchLabelById, deleteLabelById, getLabelByName, getLabelMails }

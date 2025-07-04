@@ -17,5 +17,7 @@ router.route('/:id')
     .patch(getUserId, labels.patchLabelById)
     .delete(getUserId, labels.deleteLabelById);
 
+router.route('/:id/mails')
+    .get(getUserId, labels.getLabelMails);
 
 module.exports = router

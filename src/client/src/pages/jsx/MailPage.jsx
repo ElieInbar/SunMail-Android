@@ -60,7 +60,7 @@ function MailPage() {
   }
 
   async function handleSelectLabel(label) {
-    const res = await fetch(`/api/labelsAndMails/${mail.id}`, {
+    const res = await fetch(`/api/mails/${mail.id}/labels`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -82,7 +82,7 @@ function MailPage() {
   }
 
   async function handleRemoveLabel(labelId) {
-    const res = await fetch(`/api/labelsAndMails/${mail.id}/${labelId}`, {
+    const res = await fetch(`/api/mails/${mail.id}/labels/${labelId}`, {
       method: "DELETE",
       credentials: "include"
     });

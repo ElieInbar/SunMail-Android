@@ -75,3 +75,27 @@ exports.getLabelByName = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+/**
+ * GET /api/labels/:id/mails
+ * Get all mails that have a specific label
+ */
+exports.getLabelMails = async (req, res) => {
+    try {
+        const userId = req.id;
+        if (!userId) return res.status(401).json({ error: 'User not authenticated' });
+
+        const labelId = req.params.id;
+        if (!labelId) return res.status(400).json({ error: 'Label ID is required' });
+
+        const mails = await labelService.getLabelMails(labelId, userId);
+        if (mails === null) {
+            return res.status(404).json({ error: 'Label not found' });
+        }
+
+        return res.status(200).json(mails);
+    } catch (error) {
+        console.error('Error getting label mails:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};

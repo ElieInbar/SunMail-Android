@@ -66,7 +66,7 @@ function Mail({ mail }) {
     }
     const label = await res1.json();
     if (!isStarred) {
-      const res2 = await fetch(`/api/labelsAndMails/${mail.id}`, {
+      const res2 = await fetch(`/api/mails/${mail.id}/labels`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -81,7 +81,7 @@ function Mail({ mail }) {
       fetchMails(currentFolder)
       fetchAllMails()
     } else {
-      const res2 = await fetch(`/api/labelsAndMails/${mail.id}/${label.id}`, {
+      const res2 = await fetch(`/api/mails/${mail.id}/labels/${label.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json"
@@ -111,7 +111,7 @@ function Mail({ mail }) {
     }
     const label = await res1.json();
     if (!isImportant) {
-      const res2 = await fetch(`/api/labelsAndMails/${mail.id}`, {
+      const res2 = await fetch(`/api/mails/${mail.id}/labels`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -126,7 +126,7 @@ function Mail({ mail }) {
       fetchMails(currentFolder)
       fetchAllMails()
     } else {
-      const res2 = await fetch(`/api/labelsAndMails/${mail.id}/${label.id}`, {
+      const res2 = await fetch(`/api/mails/${mail.id}/labels/${label.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json"

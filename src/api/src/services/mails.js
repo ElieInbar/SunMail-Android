@@ -275,6 +275,84 @@ const sendMail = async (userId, mailId) => {
     }
 };
 
+/**
+ * Add a label to a mail
+ */
+const addLabelToMail = async (userId, mailId, labelId) => {
+    try {
+        const mail = await getMailById(userId, mailId);
+        if (!mail) return null;
+
+        const label = await Label.findOne({ id: labelId, userId });
+        if (!label) return null;
+
+        // Check if mail already has this label
+        const hasLabel = mail.labels.some(l => l._id.toString() === label._id.toString());
+        if (hasLabel) {
+            throw new Error('Mail already has this label');
+        }
+
+        // Special handling for spam label
+        if (label.name === "spam") {
+            // Remove all user labels from mail
+            const otherLabels = mail.labels.filter(l => l.userId !== userId);
+            mail.labels = otherLabels;
+        }
+
+        // Add the label to the mail
+        mail.labels.push(label._id);
+        await mail.save();
+
+        return await mail.populate('labels');
+    } catch (error) {
+        console.error('Error adding label to mail:', error);
+        throw error;
+    }
+};
+
+/**
+ * Remove a label from a mail
+ */
+const removeLabelFromMail = async (userId, mailId, labelId) => {
+    try {
+        const mail = await getMailById(userId, mailId);
+        if (!mail) return null;
+
+        const label = await Label.findOne({ id: labelId, userId });
+        if (!label) return null;
+
+        // Check if mail has this label
+        const hasLabel = mail.labels.some(l => l._id.toString() === label._id.toString());
+        if (!hasLabel) {
+            throw new Error('Mail does not have this label');
+        }
+
+        // Remove the label from the mail
+        mail.labels = mail.labels.filter(l => l._id.toString() !== label._id.toString());
+        await mail.save();
+
+        return await mail.populate('labels');
+    } catch (error) {
+        console.error('Error removing label from mail:', error);
+        throw error;
+    }
+};
+
+/**
+ * Get all labels of a mail
+ */
+const getMailLabels = async (userId, mailId) => {
+    try {
+        const mail = await getMailById(userId, mailId);
+        if (!mail) return null;
+
+        return mail.labels;
+    } catch (error) {
+        console.error('Error getting mail labels:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     getLast50,
     getById,
@@ -285,5 +363,8 @@ module.exports = {
     setRead,
     deleteMail,
     editMail,
-    sendMail
+    sendMail,
+    addLabelToMail,
+    removeLabelFromMail,
+    getMailLabels
 };
