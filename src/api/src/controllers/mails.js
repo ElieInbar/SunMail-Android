@@ -3,6 +3,8 @@
 const mailService = require('../services/mails');
 const userService = require('../services/users');
 const labelService = require('../services/labels');
+const blacklistController = require('./blacklist');
+const { extractUrls } = require('../utils/urlUtils');
 
 /**
  * Helper: resolve an email address to a userId.
@@ -221,6 +223,117 @@ exports.editMail = async (req, res) => {
     return res.status(200).json(mail);
   } catch (error) {
     console.error('Error editing mail:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * POST /api/mails/:id/labels
+ * Add a label to a mail
+ */
+exports.addLabelToMail = async (req, res) => {
+  try {
+    const userId = req.id;
+    if (!userId) return res.status(401).json({ error: 'User not authenticated' });
+
+    const { labelId } = req.body;
+    const mailId = req.params.id;
+
+    if (!labelId) return res.status(400).json({ error: 'Label ID is required' });
+    if (!mailId) return res.status(400).json({ error: 'Mail ID is required' });
+
+    // Get the label to check if it's spam
+    const label = await labelService.getLabelById(labelId, userId);
+    if (!label) return res.status(404).json({ error: 'Label not found' });
+
+    // Special handling for spam label
+    if (label.name === "spam") {
+      const mail = await mailService.getMailById(userId, mailId);
+      if (mail) {
+        // Add URLs to blacklist
+        const urls = extractUrls(`${mail.subject} ${mail.body}`);
+        for (const url of urls) {
+          req.body = { url: url };
+          await blacklistController.createBlacklistEntry(req, res);
+        }
+      }
+    }
+
+    const updatedMail = await mailService.addLabelToMail(userId, mailId, labelId);
+    if (!updatedMail) return res.status(404).json({ error: 'Mail or label not found' });
+
+    return res.status(201).json({ message: 'Label added to mail successfully', mail: updatedMail });
+  } catch (error) {
+    if (error.message === 'Mail already has this label') {
+      return res.status(400).json({ error: error.message });
+    }
+    console.error('Error adding label to mail:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * DELETE /api/mails/:id/labels/:labelId
+ * Remove a label from a mail
+ */
+exports.removeLabelFromMail = async (req, res) => {
+  try {
+    const userId = req.id;
+    if (!userId) return res.status(401).json({ error: 'User not authenticated' });
+
+    const { labelId } = req.params;
+    const mailId = req.params.id;
+
+    if (!labelId) return res.status(400).json({ error: 'Label ID is required' });
+    if (!mailId) return res.status(400).json({ error: 'Mail ID is required' });
+
+    // Get the label to check if it's spam
+    const label = await labelService.getLabelById(labelId, userId);
+    if (!label) return res.status(404).json({ error: 'Label not found' });
+
+    // Special handling for spam label removal
+    if (label.name === "spam") {
+      const mail = await mailService.getMailById(userId, mailId);
+      if (mail) {
+        const urls = extractUrls(`${mail.subject} ${mail.body}`);
+        for (const url of urls) {
+          req.body = { url: url };
+          await blacklistController.deleteBlacklistEntry(req, res);
+        }
+      }
+    }
+
+    const updatedMail = await mailService.removeLabelFromMail(userId, mailId, labelId);
+    if (!updatedMail) return res.status(404).json({ error: 'Mail or label not found' });
+
+    return res.status(204).end();
+  } catch (error) {
+    if (error.message === 'Mail does not have this label') {
+      return res.status(404).json({ error: error.message });
+    }
+    console.error('Error removing label from mail:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * GET /api/mails/:id/labels
+ * Get all labels of a mail
+ */
+exports.getMailLabels = async (req, res) => {
+  try {
+    const userId = req.id;
+    if (!userId) return res.status(401).json({ error: 'User not authenticated' });
+
+    const mailId = req.params.id;
+    if (!mailId) return res.status(400).json({ error: 'Mail ID is required' });
+
+    const labels = await mailService.getMailLabels(userId, mailId);
+    if (labels === null) return res.status(404).json({ error: 'Mail not found' });
+
+    return res.status(200).json(labels);
+  } catch (error) {
+    console.error('Error getting mail labels:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
