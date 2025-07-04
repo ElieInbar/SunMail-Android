@@ -1,14 +1,35 @@
-package com.example.sunmail;
+package com.example.sunmail.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.sunmail.R;
+import com.example.sunmail.adapter.MailAdapter;
+import com.example.sunmail.model.Mail;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.example.sunmail.network.ApiClient;
+import com.example.sunmail.network.MailApi;
+import com.example.sunmail.viewmodel.MailViewModel;
 import com.google.android.material.navigation.NavigationView;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity {
     // Declaration of main views
@@ -16,6 +37,9 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton menuButton;
     private NavigationView navigationView;
     private ImageButton composeButton;
+    private MailViewModel mailViewModel;
+    private MailAdapter mailAdapter;
+    private RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +48,27 @@ public class HomeActivity extends AppCompatActivity {
         initViews();    // Initializes the views
         setupDrawer();  // Configures the navigation drawer
         setupComposeButton(); // Configures the compose button
+//        loginUser("elinab@sunmail.com", "hello12!");
+
+        // Get the RecyclerView
+        recyclerView = findViewById(R.id.emails_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mailAdapter = new MailAdapter(new ArrayList<>());
+        recyclerView.setAdapter(mailAdapter);
+
+
+        mailViewModel = new ViewModelProvider(this).get(MailViewModel.class);
+        mailViewModel.getMails().observe(this, mails -> {
+            // when the list change, we update the api
+            mailAdapter.setMailList(mails);
+//            for (Mail mail : mails) {
+//                System.out.println(mail);
+//            }
+        });
+
+        mailViewModel.fetchMails();
     }
+
 
     // Method to bind layout views to variables
     private void initViews() {
@@ -100,5 +144,38 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+    private void loginUser(String email, String password) {
+        MailApi mailApi = ApiClient.getClient(this).create(MailApi.class);
+
+        Map<String, String> body = new HashMap<>();
+        body.put("email", email);
+        body.put("password", password);
+
+        Call<Void> call = mailApi.login(body);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    runOnUiThread(() ->
+                            Toast.makeText(HomeActivity.this, "Connected !", Toast.LENGTH_SHORT).show()
+                    );
+                } else {
+                    runOnUiThread(() ->
+                            Toast.makeText(HomeActivity.this, "Indentifiers Error !", Toast.LENGTH_SHORT).show()
+                    );
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("API", "Network errror : " + t.getMessage(), t);
+                runOnUiThread(() ->
+                        Toast.makeText(HomeActivity.this, "Network errror  : " + t.getMessage(), Toast.LENGTH_SHORT).show()
+                );
+            }
+
+        });
+    }
+
 
 }

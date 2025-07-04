@@ -55,4 +55,4 @@ app.all('/{*any}', (req, res) => {
 app.set('view engine', 'ejs');
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT);
+app.listen(PORT, '0.0.0.0');

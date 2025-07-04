@@ -1,14 +1,12 @@
-package com.example.sunmail; // Package declaration
+package com.example.sunmail.activity; // Package declaration
 
 import android.content.Intent; // Import Intent class to launch activities
 import android.os.Bundle; // Import Bundle to pass data between activities
 import android.view.View;
 
-import androidx.activity.EdgeToEdge; // Import for edge-to-edge screen handling
 import androidx.appcompat.app.AppCompatActivity; // Import base class for activities
-import androidx.core.graphics.Insets; // Import for handling system margins
-import androidx.core.view.ViewCompat; // Import for view compatibility
-import androidx.core.view.WindowInsetsCompat; // Import for window insets handling
+
+import com.example.sunmail.R;
 
 public class MainActivity extends AppCompatActivity { // Main activity class declaration
 
