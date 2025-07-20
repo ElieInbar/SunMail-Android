@@ -1,4 +1,4 @@
-package com.example.sunmail;
+package com.example.sunmail.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.sunmail.R;
 import com.google.android.material.navigation.NavigationView;
 
 public class HomeActivity extends AppCompatActivity {
