@@ -2,6 +2,8 @@ package com.example.sunmail.api;
 
 import com.example.sunmail.model.LoginRequest;
 import com.example.sunmail.model.UserRegisterForm;
+import com.example.sunmail.model.User;
+
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -13,7 +15,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Part;
 import retrofit2.http.Header;
 import retrofit2.http.PartMap;
-
+import retrofit2.http.Path;
 
 import java.util.Map;
 public interface AuthService {
@@ -29,6 +31,9 @@ public interface AuthService {
                         @Part("userName") RequestBody userName,
                         @Part("password") RequestBody password,
                         @Part("confirmPassword") RequestBody confirmPassword);
+
+    @GET("users/by-username/{userName}")
+    Call<User> getUserByUserName(@Path("userName") String userName);
 }
 
 //public interface AuthService {

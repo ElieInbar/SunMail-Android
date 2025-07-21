@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -17,7 +19,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
         setContentView(R.layout.activity_login);
-
+        ProgressBar progressBar = findViewById(R.id.progressBar);
         LoginViewModel vm = new ViewModelProvider(this).get(LoginViewModel.class);
 
 
@@ -39,17 +41,20 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         btnLogin.setOnClickListener(v -> {
-                String email = editUserName.getText().toString();
+                String userNameOrEmail = editUserName.getText().toString();
                 String password = editPassword.getText().toString();
 
-                if (email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(this, "Email and Password are required", Toast.LENGTH_SHORT).show();
+                if (userNameOrEmail.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(this, "Username and Password are required", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                vm.login(email, password);
+                progressBar.setVisibility(View.VISIBLE);
+                vm.login(userNameOrEmail, password);
             });
+
             vm.getAuthResult().observe(this, authResult -> {
+                progressBar.setVisibility(View.GONE);
                 if (authResult instanceof AuthResult.Success) {
                     // TODO - Save cookie to room
                     goToMain();
@@ -62,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
             });
     }
     private void goToMain() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
         startActivity(intent);
         finish();
     }

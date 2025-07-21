@@ -1,5 +1,16 @@
 package com.example.sunmail.activities;
 
+import android.content.DialogInterface;
+import android.util.Log;
+import android.widget.Button;
+import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.ViewModelProvider;
+import com.example.sunmail.viewmodel.HomeViewModel;
+import androidx.appcompat.app.AlertDialog;
+import android.widget.TextView;
+import android.view.View;
+import android.widget.PopupMenu;
+
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +28,8 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton menuButton;
     private NavigationView navigationView;
     private ImageButton composeButton;
+    private HomeViewModel homeViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +38,7 @@ public class HomeActivity extends AppCompatActivity {
         initViews();    // Initializes the views
         setupDrawer();  // Configures the navigation drawer
         setupComposeButton(); // Configures the compose button
+        setupLogout();
     }
 
     // Method to bind layout views to variables
@@ -100,6 +114,45 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(HomeActivity.this, ComposeActivity.class);
             startActivity(intent);
         });
+    }
+
+    // --- Logout logic ---
+    private void setupLogout() {
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        TextView profileButton = findViewById(R.id.profile_button);
+        if (profileButton != null) {
+            profileButton.setOnClickListener(this::showProfileMenu);
+        }
+        homeViewModel.getSession().observe(this, session -> {
+            if (session == null || session.token == null || session.token.isEmpty()) {
+                Intent intent = new Intent(HomeActivity.this, com.example.sunmail.activities.LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+    }
+
+    private void showProfileMenu(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.getMenuInflater().inflate(R.menu.profile_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_logout) {
+                showLogoutDialog();
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private void showLogoutDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("logout")
+                .setMessage("are you sure you want to logout?")
+                .setPositiveButton("yes", (dialog, which) -> homeViewModel.logout())
+                .setNegativeButton("no", null)
+                .show();
     }
 
 }

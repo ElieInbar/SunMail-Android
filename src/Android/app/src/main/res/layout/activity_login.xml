@@ -46,6 +46,7 @@
             android:layout_marginBottom="16dp"
             android:hint="@string/login_etUsername"
             android:padding="16dp"
+            android:inputType="text"
             android:textColor="#000000"
             android:textColorHint="#D3D3D3"
             android:textSize="18sp" />
@@ -80,6 +81,13 @@
             android:backgroundTint="@android:color/darker_gray"
             android:textSize="18sp"
             android:padding="12dp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center"/>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

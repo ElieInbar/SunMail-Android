@@ -2,28 +2,65 @@ package com.example.sunmail.repository;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.room.Room;
+
+import com.example.sunmail.db.AppDatabase;
+import com.example.sunmail.db.UserSessionDao;
+import com.example.sunmail.model.UserSessionEntity;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 
 public class SessionRepository {
-    private final MutableLiveData<String> token = new MutableLiveData<>();
+    private final UserSessionDao dao;
+    private final LiveData<UserSessionEntity> sessionLiveData;
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
     public SessionRepository(Application app) {
-        // For now, just store token in memory
-        // TODO: Implement Room database for persistent storage
+        AppDatabase db = Room.databaseBuilder(app, AppDatabase.class, "sunmail_db").build();
+        dao = db.userSessionDao();
+        sessionLiveData = dao.getSession();
+    }
+
+    public void saveSession(String token, String userId, String userName, String email, String profilePicture) {
+        executor.execute(() -> dao.insert(new UserSessionEntity(token, userId, userName, email, profilePicture)));
     }
 
     public void saveToken(String token) {
-        this.token.postValue(token);
+        executor.execute(() -> dao.insert(new UserSessionEntity(token)));
     }
 
-    public LiveData<String> getSession() {
-        return token;
+    public LiveData<UserSessionEntity> getSession() {
+        return sessionLiveData;
     }
 
     public void clearSession() {
-        token.postValue(null);
+        executor.execute(dao::clear);
     }
 }
+
+
+//public class SessionRepository {
+//    private final MutableLiveData<String> token = new MutableLiveData<>();
+//
+//    public SessionRepository(Application app) {
+//        // For now, just store token in memory
+//        // TODO: Implement Room database for persistent storage
+//    }
+//
+//    public void saveToken(String token) {
+//        this.token.postValue(token);
+//    }
+//
+//    public LiveData<String> getSession() {
+//        return token;
+//    }
+//
+//    public void clearSession() {
+//        token.postValue(null);
+//    }
+//}
 
 //package com.example.sunmail.repository;
 //

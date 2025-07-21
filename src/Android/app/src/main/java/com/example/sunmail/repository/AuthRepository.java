@@ -10,6 +10,7 @@ import com.example.sunmail.api.AuthService;
 import com.example.sunmail.model.LoginRequest;
 import com.example.sunmail.model.UserRegisterForm;
 import com.example.sunmail.util.SimpleCallback;
+import com.example.sunmail.model.User;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -91,7 +92,23 @@ public class AuthRepository {
         });
     }
 
-
+    public void getUserByUserName(String userName, SimpleCallback<User> callback) {
+        Call<User> call = api.getUserByUserName(userName);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to fetch user info");
+                }
+            }
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
 
     /* ---------- Register ---------- */
 //    public LiveData<Resource<Void>> register(UserRegisterForm form, android.content.Context ctx) {

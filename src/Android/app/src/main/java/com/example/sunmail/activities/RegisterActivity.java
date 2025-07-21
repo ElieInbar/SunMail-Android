@@ -33,11 +33,13 @@ import com.example.sunmail.R;
 import com.example.sunmail.model.UserRegisterForm;
 import com.example.sunmail.viewmodel.RegisterViewModel;
 import com.example.sunmail.model.AuthResult;
-
+import android.view.View;
+import android.widget.ProgressBar;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -48,22 +50,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         RegisterViewModel vm = new ViewModelProvider(this).get(RegisterViewModel.class);
 
-//        RegisterViewModel vm = new ViewModelProvider(this).get(RegisterViewModel.class);
-//
-//        // Find views
-//        firstNameEdit = findViewById(R.id.et_first_name);
-//        lastNameEdit = findViewById(R.id.et_last_name);
-//        userNameEdit = findViewById(R.id.et_user_name);
-//        emailEdit = findViewById(R.id.et_email);
-//        passwordEdit = findViewById(R.id.password);
-//        confirmPasswordEdit = findViewById(R.id.confirm_password);
-//        birthDateEdit = findViewById(R.id.birth_date);
-//        genderSpinner = findViewById(R.id.gender_spinner);
-////        profileImage = findViewById(R.id.profile_image);
-////        selectImageBtn = findViewById(R.id.select_image_btn);
-//        registerBtn = findViewById(R.id.register_btn);
-//        progressBar = findViewById(R.id.progress_bar);
-
         EditText editFirstName = findViewById(R.id.et_first_name);
         EditText editLastName = findViewById(R.id.et_last_name);
         Spinner spinnerGender = findViewById(R.id.gender_spinner);
@@ -73,12 +59,19 @@ public class RegisterActivity extends AppCompatActivity {
         EditText editConfirmPassword = findViewById(R.id.confirm_password);
         Button registerBtn = findViewById(R.id.register_btn);
         Button btnBackToLogin = findViewById(R.id.btnBackToLogin);
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+////        profileImage = findViewById(R.id.profile_image);
+////        selectImageBtn = findViewById(R.id.select_image_btn);
+
+        editBirthDate.setFocusable(false);
+        editBirthDate.setOnClickListener(v -> showDatePicker(editBirthDate));
 
         btnBackToLogin.setOnClickListener(v -> {
             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         });
+
 //        Button selectProfilePictureButton = findViewById(R.id.buttonSelectProfilePicture);
 //        TextView selectedProfilePictureText = findViewById(R.id.textSelectedProfilePicture);
 
@@ -148,12 +141,16 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
+            progressBar.setVisibility(View.VISIBLE);
+            registerBtn.setEnabled(false);
             UserRegisterForm form = new UserRegisterForm(firstName, lastName, gender,
                     birthDate, userName, password, confirmPassword);
             vm.register(form);
         });
 
         vm.getAuthResult().observe(this, authResult -> {
+            progressBar.setVisibility(View.GONE);
+            registerBtn.setEnabled(true);
             if (authResult instanceof AuthResult.Success) {
                 Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
                 // Navigate to login after successful registration
@@ -166,6 +163,25 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void showDatePicker(EditText editBirthDate) {
+        Calendar calendar = Calendar.getInstance();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (view, year, month, day) -> {
+                    // Format the date as MM/DD/YYYY
+                    String date = String.format(Locale.US, "%02d/%02d/%d", month + 1, day, year);
+                    editBirthDate.setText(date);
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+        // Set max date to today
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        datePickerDialog.show();
+    }
+
 }
 
 //    private void showDatePicker() {

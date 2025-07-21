@@ -10,12 +10,10 @@ import androidx.annotation.NonNull;
 
 import com.example.sunmail.model.AuthResult;
 import com.example.sunmail.model.UserRegisterForm;
-import com.example.sunmail.util.Resource;
 import com.example.sunmail.repository.AuthRepository;
 import com.example.sunmail.util.SimpleCallback;
 //import com.example.sunmail.util.ValidationUtils;
 import com.example.sunmail.repository.SessionRepository;
-import com.example.sunmail.model.UserEntity;
 import androidx.lifecycle.Transformations;
 public class LoginViewModel extends AndroidViewModel {
 
@@ -44,17 +42,38 @@ public class LoginViewModel extends AndroidViewModel {
 
     public LiveData<Boolean> isLoggedIn() {
         return Transformations.map(sessionRepository.getSession(),
-                token -> token != null && !token.isEmpty());
+                session -> session != null && session.token != null && !session.token.isEmpty());
     }
 
-    public void login(String email, String password) {
+    private String extractToken(String cookie) {
+        if (cookie == null) return null;
+        for (String part : cookie.split(";")) {
+            if (part.trim().startsWith("token=")) {
+                return part.trim().substring("token=".length());
+            }
+        }
+        return null;
+    }
+
+    public void login(String userNameOrEmail, String password) {
+        String email = userNameOrEmail.contains("@") ? userNameOrEmail : userNameOrEmail + "@sunmail.com";
+        String userName = userNameOrEmail.contains("@") ? userNameOrEmail.split("@")[0] : userNameOrEmail;
         repo.login(email, password, new SimpleCallback<String>() {
             @Override
             public void onSuccess(String data) {
                 // TODO - Save cookie to room
-                saveToken(data);
-                Log.d("LoginViewModel", "Login successful, token: " + data);
-                authResult.postValue(new AuthResult.Success());
+                String token = extractToken(data);
+                repo.getUserByUserName(userName, new SimpleCallback<com.example.sunmail.model.User>() {
+                    @Override
+                    public void onSuccess(com.example.sunmail.model.User user) {
+                        sessionRepository.saveSession(token, user.getId(), user.getUserName(), user.getEmail(), user.getProfilePictureUrl());
+                        authResult.postValue(new AuthResult.Success());
+                    }
+                    @Override
+                    public void onError(String errorMessage) {
+                        authResult.postValue(new AuthResult.Error(errorMessage));
+                    }
+                });
             }
 
             @Override
