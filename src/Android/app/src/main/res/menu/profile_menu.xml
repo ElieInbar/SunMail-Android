@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_logout"
-        android:title="התנתק"
+        android:title="@string/btnLogout"
         android:icon="@drawable/ic_logout" />
 </menu>

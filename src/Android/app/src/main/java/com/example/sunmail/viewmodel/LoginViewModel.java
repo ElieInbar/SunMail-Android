@@ -4,27 +4,17 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import android.app.Application;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.example.sunmail.model.AuthResult;
-import com.example.sunmail.model.UserRegisterForm;
 import com.example.sunmail.repository.AuthRepository;
 import com.example.sunmail.util.SimpleCallback;
-//import com.example.sunmail.util.ValidationUtils;
 import com.example.sunmail.repository.SessionRepository;
 import androidx.lifecycle.Transformations;
 public class LoginViewModel extends AndroidViewModel {
-
     private final AuthRepository repo;
     private final MutableLiveData<AuthResult> authResult = new MutableLiveData<>();
     private final SessionRepository sessionRepository;
-
-//
-//    public final MutableLiveData<String> password = new MutableLiveData<>("");
-//    public LiveData<Resource<Void>> result;
-
 
     public LoginViewModel(@NonNull Application app) {
         super(app);
@@ -58,15 +48,15 @@ public class LoginViewModel extends AndroidViewModel {
     public void login(String userNameOrEmail, String password) {
         String email = userNameOrEmail.contains("@") ? userNameOrEmail : userNameOrEmail + "@sunmail.com";
         String userName = userNameOrEmail.contains("@") ? userNameOrEmail.split("@")[0] : userNameOrEmail;
-        repo.login(email, password, new SimpleCallback<String>() {
+        repo.login(email, password, new SimpleCallback<>() {
             @Override
             public void onSuccess(String data) {
                 // TODO - Save cookie to room
                 String token = extractToken(data);
-                repo.getUserByUserName(userName, new SimpleCallback<com.example.sunmail.model.User>() {
+                repo.getUserByUserName(userName, new SimpleCallback<>() {
                     @Override
                     public void onSuccess(com.example.sunmail.model.User user) {
-                        sessionRepository.saveSession(token, user.getId(), user.getUserName(), user.getEmail(), user.getProfilePictureUrl());
+                        sessionRepository.saveSession(token, user.getId(), user.getUserName(), user.getEmail(), user.getProfilePicture());
                         authResult.postValue(new AuthResult.Success());
                     }
                     @Override
@@ -75,25 +65,10 @@ public class LoginViewModel extends AndroidViewModel {
                     }
                 });
             }
-
             @Override
             public void onError(String errorMessage) {
                 authResult.postValue(new AuthResult.Error(errorMessage));
             }
         });
     }
-
-//    public void register(UserRegisterForm form) {
-//        repo.register(form, new SimpleCallback<Void>() {
-//            @Override
-//            public void onSuccess(Void data) {
-//                authResult.postValue(new AuthResult.Success());
-//            }
-//
-//            @Override
-//            public void onError(String errorMessage) {
-//                authResult.postValue(new AuthResult.Error(errorMessage));
-//            }
-//        });
-//    }
 }

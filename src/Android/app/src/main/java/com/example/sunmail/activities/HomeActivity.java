@@ -39,6 +39,20 @@ public class HomeActivity extends AppCompatActivity {
         setupDrawer();  // Configures the navigation drawer
         setupComposeButton(); // Configures the compose button
         setupLogout();
+
+        // TODO: user's session info
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel.getSession().observe(this, session -> {
+            if (session != null) {
+                String info = "userId=" + session.userId +
+                        ", userName=" + session.userName +
+                        ", email=" + session.email +
+                        ", profilePicture=" + session.profilePicture +
+                        ", token=" + session.token;
+                Log.d("UserSessionInfo", info);
+                Toast.makeText(this, info, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     // Method to bind layout views to variables
@@ -116,7 +130,6 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    // --- Logout logic ---
     private void setupLogout() {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         TextView profileButton = findViewById(R.id.profile_button);

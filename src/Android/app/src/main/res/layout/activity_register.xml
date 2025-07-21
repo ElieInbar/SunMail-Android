@@ -18,7 +18,6 @@
             android:padding="24dp"
             android:gravity="center_horizontal">
 
-
             <TextView
                 android:id="@+id/registerTitle"
                 android:layout_width="wrap_content"
@@ -30,8 +29,6 @@
                 android:gravity="center"
                 android:layout_marginBottom="24dp" />
 
-
-            <!-- First Name -->
             <EditText
                 android:id="@+id/et_first_name"
                 android:layout_width="match_parent"
@@ -40,9 +37,7 @@
                 android:inputType="textPersonName"
                 android:layout_marginBottom="16dp"
                 android:padding="12dp" />
-<!--                android:text="@={vm.form.value.firstName}" />-->
 
-            <!-- Last Name -->
             <EditText
                 android:id="@+id/et_last_name"
                 android:layout_width="match_parent"
@@ -52,7 +47,6 @@
                 android:layout_marginBottom="16dp"
                 android:padding="12dp" />
 
-            <!-- Gender -->
             <Spinner
                 android:id="@+id/gender_spinner"
                 android:layout_width="match_parent"
@@ -64,18 +58,16 @@
                 android:padding="12dp"
                  />
 
-            <!-- Birth Date -->
             <EditText
                 android:id="@+id/birth_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Birth Date (MM/DD/YYYY)"
+                android:hint="@string/birth_date_mm_dd_yyyy"
                 android:layout_marginBottom="16dp"
                 android:padding="12dp"
                 android:inputType="date"
                 />
 
-            <!-- Username -->
             <EditText
                 android:id="@+id/et_user_name"
                 android:layout_width="match_parent"
@@ -85,7 +77,6 @@
                 android:padding="12dp"
                 android:inputType="text" />
 
-            <!-- Password -->
             <EditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
@@ -97,41 +88,47 @@
                 android:textSize="20sp"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Confirm Password -->
             <EditText
                 android:id="@+id/confirm_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:hint="Confirm Password"
+                android:hint="@string/confirm_password"
                 android:inputType="textPassword" />
 
-            <!--            <Button-->
-<!--                android:id="@+id/buttonSelectProfilePicture"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Select Image"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:layout_marginBottom="16dp" />-->
+            <FrameLayout
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp">
 
-            <!-- Profile Picture -->
-<!--            <ImageView-->
-<!--                android:id="@+id/profile_image"-->
-<!--                android:layout_width="96dp"-->
-<!--                android:layout_height="96dp"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:src="@drawable/profile_circle_blue"-->
-<!--                android:scaleType="centerCrop"-->
-<!--                android:background="@drawable/profile_circle_orange"-->
-<!--                android:contentDescription="@string/profile_picture" />-->
-<!--            <TextView-->
-<!--                android:id="@+id/textSelectedProfilePicture"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="No file selected"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:layout_marginBottom="24dp" />-->
+                <TextView
+                    android:id="@+id/profileInitial"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="40sp"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/profile_circle_blue"
+                    android:text="" />
+
+                <ImageView
+                    android:id="@+id/profileImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+
+            <Button
+                android:id="@+id/btnSelectImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_image"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp" />
 
 
             <!-- Register Button -->
@@ -139,7 +136,7 @@
                 android:id="@+id/register_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Register"
+                android:text="@string/btnRegister"
                 android:layout_marginBottom="16dp"
                 android:padding="12dp"
                  />
@@ -155,7 +152,7 @@
                 android:id="@+id/btnBackToLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Back to Login"
+                android:text="@string/back_to_login"
                 android:backgroundTint="@android:color/darker_gray"
                 android:padding="12dp" />
 

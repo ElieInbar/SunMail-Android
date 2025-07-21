@@ -1,21 +1,12 @@
 package com.example.sunmail.activities;
 
-import static com.example.sunmail.R.*;
-
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -25,6 +16,9 @@ import android.widget.Toast;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -33,15 +27,19 @@ import com.example.sunmail.R;
 import com.example.sunmail.model.UserRegisterForm;
 import com.example.sunmail.viewmodel.RegisterViewModel;
 import com.example.sunmail.model.AuthResult;
-import android.view.View;
-import android.widget.ProgressBar;
 
-import java.io.File;
-import java.io.IOException;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class RegisterActivity extends AppCompatActivity {
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri imageUri;
+    private ImageView profileImageView;
+    private TextView profileInitial;
+    private static final int PERMISSION_REQUEST_CODE = 1001;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,11 +58,28 @@ public class RegisterActivity extends AppCompatActivity {
         Button registerBtn = findViewById(R.id.register_btn);
         Button btnBackToLogin = findViewById(R.id.btnBackToLogin);
         ProgressBar progressBar = findViewById(R.id.progressBar);
-////        profileImage = findViewById(R.id.profile_image);
-////        selectImageBtn = findViewById(R.id.select_image_btn);
+        profileImageView = findViewById(R.id.profileImageView);
+        Button btnSelectImage = findViewById(R.id.btnSelectImage);
+        btnSelectImage.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+            } else {
+                openImagePicker();
+            }
+        });
+        profileInitial = findViewById(R.id.profileInitial);
 
         editBirthDate.setFocusable(false);
         editBirthDate.setOnClickListener(v -> showDatePicker(editBirthDate));
+
+        updateProfileInitial(editUserName.getText().toString());
+        editUserName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) updateProfileInitial(editUserName.getText().toString());
+        });
+        editUserName.setOnKeyListener((v, keyCode, event) -> {
+            updateProfileInitial(editUserName.getText().toString());
+            return false;
+        });
 
         btnBackToLogin.setOnClickListener(v -> {
             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
@@ -72,51 +87,8 @@ public class RegisterActivity extends AppCompatActivity {
             finish();
         });
 
-//        Button selectProfilePictureButton = findViewById(R.id.buttonSelectProfilePicture);
-//        TextView selectedProfilePictureText = findViewById(R.id.textSelectedProfilePicture);
-
-        // ViewModel
-
-//        birthDateEdit.setOnClickListener(v -> showDatePicker());
-//
-//        // Select image
-//        selectImageBtn.setOnClickListener(v -> openImagePicker());
-//
-//        checkStoragePermission();
-//
-//        selectProfilePictureButton.setOnClickListener(v -> {
-//            if (isStoragePermissionGranted()) {
-//                openImagePicker();
-//            } else {
-//                requestStoragePermission();
-//            }
-//        });
-
-//        vm.getAuthResult().observe(this, result -> {
-//            if (result instanceof AuthResult.Success) {
-//                Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
-//                startActivity(new Intent(this, MainActivity.class));
-//                finish();
-//            } else if (result instanceof AuthResult.Error) {
-//                Toast.makeText(this, ((AuthResult.Error) result).getMessage(), Toast.LENGTH_LONG).show();
-//            }
-//        });
-
-        // Register button
         registerBtn.setOnClickListener(v -> {
-            // Validate inputs
-//        if (progressBar.getVisibility() == View.VISIBLE) return; // Prevent multiple clicks
-//        progressBar.setVisibility(View.VISIBLE);
-//
-//        // Get input values
-//        progressBar.setVisibility(View.VISIBLE);
-//        selectedImageUri = null; // Reset image URI before validation
-//
-//        if (selectedImageFile != null) {
-//            selectedImageUri = Uri.fromFile(selectedImageFile);
-//        }
 
-            // Collect input data
             String firstName = editFirstName.getText().toString();
             String lastName = editLastName.getText().toString();
             String gender = spinnerGender.getSelectedItem().toString();
@@ -145,7 +117,7 @@ public class RegisterActivity extends AppCompatActivity {
             registerBtn.setEnabled(false);
             UserRegisterForm form = new UserRegisterForm(firstName, lastName, gender,
                     birthDate, userName, password, confirmPassword);
-            vm.register(form);
+            vm.register(form, imageUri, this);
         });
 
         vm.getAuthResult().observe(this, authResult -> {
@@ -153,7 +125,6 @@ public class RegisterActivity extends AppCompatActivity {
             registerBtn.setEnabled(true);
             if (authResult instanceof AuthResult.Success) {
                 Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                // Navigate to login after successful registration
                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
@@ -177,112 +148,64 @@ public class RegisterActivity extends AppCompatActivity {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
-        // Set max date to today
         datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 
-}
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
 
-//    private void showDatePicker() {
-//        final Calendar c = Calendar.getInstance();
-//        DatePickerDialog dpd = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-//            String date = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
-//            birthDateEdit.setText(date);
-//        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-//        dpd.show();
-//    }
-//
-//    private void openImagePicker() {
-//        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-//    }
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
-//            selectedImageUri = data.getData();
-//            try {
-//                selectedImageFile = new File(getPathFromUri(selectedImageUri));
-//                selectedProfilePictureText.setText(selectedImageFile.getName());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-//
-//    private void checkStoragePermission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (!isStoragePermissionGranted()) {
-//                requestStoragePermission();
-//            }
-//        }
-//    }
-//    private boolean isStoragePermissionGranted() {
-//        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-//                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-//    }
-//
-//    private void requestStoragePermission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
-//        }
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//
-//        if (requestCode == REQUEST_STORAGE_PERMISSION) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Storage permission granted", Toast.LENGTH_SHORT).show();
-//            } else {
-//                Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
-//
-//    private boolean validateInputs(String firstName, String lastName, String userName, String email, String password, String confirmPassword) {
-//        if (firstName.isEmpty() || lastName.isEmpty() || userName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-//            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
-//
-//        if (password.length() < 8) {
-//            Toast.makeText(this, "Password must be at least 8 characters long", Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
-//
-//        if (!password.equals(confirmPassword)) {
-//            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
-//
-//        return true;
-//    }
-//
-//    private String getPathFromUri(Uri uri) {
-//        String filePath = null;
-//        if ("content".equalsIgnoreCase(uri.getScheme())) {
-//            Cursor cursor = null;
-//            try {
-//                cursor = getContentResolver().query(uri, new String[]{MediaStore.Images.Media.DATA}, null, null, null);
-//                if (cursor != null && cursor.moveToFirst()) {
-//                    int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-//                    filePath = cursor.getString(columnIndex);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            } finally {
-//                if (cursor != null) {
-//                    cursor.close();
-//                }
-//            }
-//        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-//            filePath = uri.getPath();
-//        }
-//        return filePath;
-//    }
-//
-//}
+    private void updateProfileInitial(String userName) {
+        if (imageUri == null) {
+            String initial = userName != null && !userName.isEmpty() ? userName.substring(0, 1).toUpperCase() : "?";
+            profileInitial.setText(initial);
+            int color = getColorForUser(userName);
+            profileInitial.setBackground(createCircleDrawable(color));
+            profileInitial.setVisibility(View.VISIBLE);
+            profileImageView.setVisibility(View.GONE);
+        }
+    }
+
+    private int getColorForUser(String userName) {
+        int[] colors = {
+                0xFFE57373, 0xFFF06292, 0xFFBA68C8, 0xFF64B5F6, 0xFF4DB6AC,
+                0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF81C784, 0xFFDCE775
+        };
+        int hash = userName != null ? Math.abs(userName.hashCode()) : 0;
+        return colors[hash % colors.length];
+    }
+
+    private Drawable createCircleDrawable(int color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.OVAL);
+        drawable.setColor(color);
+        return drawable;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            profileImageView.setImageURI(imageUri);
+            profileImageView.setVisibility(View.VISIBLE);
+            profileInitial.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @Nullable int[] grantResults) {
+        assert grantResults != null;
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openImagePicker();
+            } else {
+                Toast.makeText(this, "Permission denied to read your images", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+}
