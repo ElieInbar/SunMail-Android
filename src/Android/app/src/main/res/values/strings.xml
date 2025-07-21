@@ -5,6 +5,11 @@
     <string name="login_etUsername">Username or Email</string>
     <string name="login_etPassword">Password</string>
     <string name="login_btnLogin">Login</string>
+    <string name="signup_tvTitle">Sign Up</string>
+    <string name="signup_et_firstName">First Name</string>
+    <string name="signup_et_last_name">Last Name</string>
+    <string name="signup_et_username">Username</string>
+    <string name="signup_et_password">Password</string>
 
     <string-array name="gender_array">
         <item>Male</item>

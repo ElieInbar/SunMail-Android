@@ -19,10 +19,18 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         LoginViewModel vm = new ViewModelProvider(this).get(LoginViewModel.class);
+
+
         EditText editUserName = findViewById(R.id.editTextUserName);
         EditText editPassword = findViewById(R.id.editTextPassword);
         Button btnLogin = findViewById(R.id.btnLogin);
         Button btnRegister = findViewById(R.id.btnRegister);
+
+        vm.isLoggedIn().observe(this, isLoggedIn -> {
+            if (isLoggedIn) {
+                goToMain();
+            }
+        });
 
         btnRegister.setOnClickListener(v -> {
             // move to register activity
@@ -31,20 +39,31 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         btnLogin.setOnClickListener(v -> {
-            String email = editUserName.getText().toString();
-            String password = editPassword.getText().toString();
-            vm.login(email, password);
+                String email = editUserName.getText().toString();
+                String password = editPassword.getText().toString();
+
+                if (email.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(this, "Email and Password are required", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                vm.login(email, password);
+            });
             vm.getAuthResult().observe(this, authResult -> {
                 if (authResult instanceof AuthResult.Success) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    // TODO - Save cookie to room
+                    goToMain();
+
                 } else if (authResult instanceof AuthResult.Error) {
                     String errorMessage = ((AuthResult.Error) authResult).getMessage();
                     // Show error message to the user
                     Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                 }
             });
-        });
+    }
+    private void goToMain() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

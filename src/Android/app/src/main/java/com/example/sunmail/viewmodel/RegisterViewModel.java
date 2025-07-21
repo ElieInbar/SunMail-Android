@@ -2,49 +2,61 @@ package com.example.sunmail.viewmodel;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
+
+import com.example.sunmail.model.AuthResult;
 import com.example.sunmail.util.Resource;
 import com.example.sunmail.model.UserRegisterForm;
 import com.example.sunmail.repository.AuthRepository;
 import com.example.sunmail.util.SimpleCallback;
+import com.example.sunmail.repository.SessionRepository;
+
 
 public class RegisterViewModel extends AndroidViewModel {
     private final AuthRepository repo;
-    private final MutableLiveData<Resource<Void>> registerState  = new MutableLiveData<>();
-//    private final MutableLiveData<String> firstNameError = new MutableLiveData<>("");
-//    private final MutableLiveData<String> lastNameError = new MutableLiveData<>("");
-//    private final MutableLiveData<String> userNameError = new MutableLiveData<>("");
-//    private final MutableLiveData<String> emailError = new MutableLiveData<>("");
-//    private final MutableLiveData<String> passwordError = new MutableLiveData<>("");
-//    private final MutableLiveData<String> confirmPasswordError = new MutableLiveData<>("");
-//    private final MutableLiveData<String> genderError = new MutableLiveData<>("");
-//    private final MutableLiveData<String> birthDateError = new MutableLiveData<>("");
+    private final MutableLiveData<AuthResult> authResult  = new MutableLiveData<>();
+    private final SessionRepository sessionRepository;
+
+
 
     public RegisterViewModel(@NonNull Application app) {
         super(app);
         repo = new AuthRepository(app);
+        sessionRepository = new SessionRepository(app);
+
     }
 
-    public LiveData<Resource<Void>> getRegisterState() {
-        return registerState;
+    public void saveToken(String token) {
+        sessionRepository.saveToken(token);
     }
+    public LiveData<AuthResult> getAuthResult() {
+        return authResult;
+    }
+    public void register(UserRegisterForm form) {
+        if (!form.isValid()) {
+            authResult.postValue(new AuthResult.Error("Please fill all required fields and ensure passwords match"));
+            return;
+        }
 
-    public void register(UserRegisterForm form, Context ctx) {
-        registerState.setValue(Resource.loading());
-
-        repo.register(form, ctx, new SimpleCallback<Void>() {
+        repo.register(form, new SimpleCallback<Void>() {
             @Override
-            public void onSuccess(Void unused) {
-                registerState.postValue(Resource.success(null));
+            public void onSuccess(Void data) {
+                // TODO - Save user data to room if needed
+                Log.d("RegisterViewModel", "Register success, token: " + data);
+//                saveToken(token); // שמור את הטוקן מיד אחרי ההרשמה
+                authResult.postValue(new AuthResult.Success());
             }
 
             @Override
-            public void onError(String msg) {
-                registerState.postValue(Resource.error(msg));
+            public void onError(String errorMessage) {
+                Log.e("RegisterViewModel", "Registration failed: " + errorMessage);
+                authResult.postValue(new AuthResult.Error(errorMessage));
             }
         });
     }

@@ -4,7 +4,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,49 +14,58 @@ import com.example.sunmail.util.Resource;
 import com.example.sunmail.repository.AuthRepository;
 import com.example.sunmail.util.SimpleCallback;
 //import com.example.sunmail.util.ValidationUtils;
-
+import com.example.sunmail.repository.SessionRepository;
+import com.example.sunmail.model.UserEntity;
+import androidx.lifecycle.Transformations;
 public class LoginViewModel extends AndroidViewModel {
 
     private final AuthRepository repo;
-        private final MutableLiveData<AuthResult> authResult = new MutableLiveData<>();
-//    private final MutableLiveData<Resource<String>> authState = new MutableLiveData<>();
+    private final MutableLiveData<AuthResult> authResult = new MutableLiveData<>();
+    private final SessionRepository sessionRepository;
 
-
+//
+//    public final MutableLiveData<String> password = new MutableLiveData<>("");
 //    public LiveData<Resource<Void>> result;
 
 
     public LoginViewModel(@NonNull Application app) {
         super(app);
         repo = new AuthRepository(app);
+        sessionRepository = new SessionRepository(app);
     }
 
-        public LiveData<AuthResult> getAuthResult() {
+    public void saveToken(String token) {
+        sessionRepository.saveToken(token);
+    }
+
+    public LiveData<AuthResult> getAuthResult() {
         return authResult;
     }
-//    public LiveData<Resource<String>> getAuthState() {
-//        return authState;
-//    }
+
+    public LiveData<Boolean> isLoggedIn() {
+        return Transformations.map(sessionRepository.getSession(),
+                token -> token != null && !token.isEmpty());
+    }
 
     public void login(String email, String password) {
         repo.login(email, password, new SimpleCallback<String>() {
             @Override
             public void onSuccess(String data) {
                 // TODO - Save cookie to room
+                saveToken(data);
                 Log.d("LoginViewModel", "Login successful, token: " + data);
                 authResult.postValue(new AuthResult.Success());
-//                authState.postValue(Resource.success(data));
             }
 
             @Override
             public void onError(String errorMessage) {
                 authResult.postValue(new AuthResult.Error(errorMessage));
-//                authState.postValue(Resource.error(errorMessage));
             }
         });
     }
-}
-//    public void register(UserRegisterForm form, Context ctx) {
-//        repo.register(form, ctx, new SimpleCallback<Void>() {
+
+//    public void register(UserRegisterForm form) {
+//        repo.register(form, new SimpleCallback<Void>() {
 //            @Override
 //            public void onSuccess(Void data) {
 //                authResult.postValue(new AuthResult.Success());
@@ -69,4 +77,4 @@ public class LoginViewModel extends AndroidViewModel {
 //            }
 //        });
 //    }
-//}
+}
