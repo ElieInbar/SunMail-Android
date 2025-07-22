@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/Android/app/src/main/java/com/example/sunmail/activity/MainActivity.java
-package com.example.sunmail.activity; // Package declaration
-========
 package com.example.sunmail.activities; // Package declaration
->>>>>>>> origin/main:src/Android/app/src/main/java/com/example/sunmail/activities/MainActivity.java
 
 import android.content.Intent; // Import Intent class to launch activities
 import android.os.Bundle; // Import Bundle to pass data between activities

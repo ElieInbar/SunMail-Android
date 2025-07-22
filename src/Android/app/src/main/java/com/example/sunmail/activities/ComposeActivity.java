@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/Android/app/src/main/java/com/example/sunmail/activity/ComposeActivity.java
-package com.example.sunmail.activity;
-========
 package com.example.sunmail.activities;
->>>>>>>> origin/main:src/Android/app/src/main/java/com/example/sunmail/activities/ComposeActivity.java
 
 import android.os.Bundle;
 import android.widget.EditText;

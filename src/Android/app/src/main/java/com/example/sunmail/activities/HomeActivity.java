@@ -1,6 +1,3 @@
-<<<<<<<< HEAD:src/Android/app/src/main/java/com/example/sunmail/activity/HomeActivity.java
-package com.example.sunmail.activity;
-========
 package com.example.sunmail.activities;
 
 import android.content.DialogInterface;
@@ -13,7 +10,6 @@ import androidx.appcompat.app.AlertDialog;
 import android.widget.TextView;
 import android.view.View;
 import android.widget.PopupMenu;
->>>>>>>> origin/main:src/Android/app/src/main/java/com/example/sunmail/activities/HomeActivity.java
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +21,6 @@ import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-<<<<<<<< HEAD:src/Android/app/src/main/java/com/example/sunmail/activity/HomeActivity.java
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,9 +36,7 @@ import java.util.Map;
 import com.example.sunmail.network.ApiClient;
 import com.example.sunmail.network.MailApi;
 import com.example.sunmail.viewmodel.MailViewModel;
-========
 import com.example.sunmail.R;
->>>>>>>> origin/main:src/Android/app/src/main/java/com/example/sunmail/activities/HomeActivity.java
 import com.google.android.material.navigation.NavigationView;
 
 import retrofit2.Call;
@@ -56,14 +49,11 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton menuButton;
     private NavigationView navigationView;
     private ImageButton composeButton;
-<<<<<<<< HEAD:src/Android/app/src/main/java/com/example/sunmail/activity/HomeActivity.java
     private MailViewModel mailViewModel;
     private MailAdapter mailAdapter;
     private RecyclerView recyclerView;
-========
     private HomeViewModel homeViewModel;
 
->>>>>>>> origin/main:src/Android/app/src/main/java/com/example/sunmail/activities/HomeActivity.java
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +62,6 @@ public class HomeActivity extends AppCompatActivity {
         initViews();    // Initializes the views
         setupDrawer();  // Configures the navigation drawer
         setupComposeButton(); // Configures the compose button
-<<<<<<<< HEAD:src/Android/app/src/main/java/com/example/sunmail/activity/HomeActivity.java
 //        loginUser("elinab@sunmail.com", "hello12!");
 
         // Get the RecyclerView
@@ -92,7 +81,6 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         mailViewModel.fetchMails();
-========
         setupLogout();
 
         // TODO: user's session info
@@ -108,7 +96,6 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(this, info, Toast.LENGTH_LONG).show();
             }
         });
->>>>>>>> origin/main:src/Android/app/src/main/java/com/example/sunmail/activities/HomeActivity.java
     }
 
 
