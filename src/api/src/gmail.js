@@ -39,14 +39,12 @@ const mailRoutes = require('./routes/mails');
 const userRoutes = require('./routes/users');
 const tokenRoutes = require('./routes/tokens');
 const blacklistRoutes = require('./routes/blacklist');
-const labelsAndMails = require('./routes/labelsAndMails');
 
 app.use('/api/labels', labelRoutes);
 app.use('/api/mails', mailRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tokens', tokenRoutes);
 app.use('/api/blacklist', blacklistRoutes);
-app.use('/api/labelsAndMails', labelsAndMails);
 
 app.all('/{*any}', (req, res) => {
   res.status(404).json({ error: `Route ${req.originalUrl} not found` });

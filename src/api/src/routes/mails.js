@@ -26,4 +26,12 @@ router.route('/:id')
 router.route('/label/:labelName')
     .get(getUserId, controller.getAllMailsOfLabel)
 
+// Routes for managing labels on mails
+router.route('/:id/labels')
+    .post(getUserId, controller.addLabelToMail)
+    .get(getUserId, controller.getMailLabels)
+
+router.route('/:id/labels/:labelId')
+    .delete(getUserId, controller.removeLabelFromMail)
+
 module.exports = router;

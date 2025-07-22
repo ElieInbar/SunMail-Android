@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">SunMail</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="gender_prompt">Select Gender</string>
+    <string name="login_etUsername">Username or Email</string>
+    <string name="login_etPassword">Password</string>
+    <string name="login_btnLogin">Login</string>
+    <string name="signup_tvTitle">Sign Up</string>
+    <string name="signup_et_firstName">First Name</string>
+    <string name="signup_et_last_name">Last Name</string>
+    <string name="signup_et_username">Username</string>
+    <string name="signup_et_password">Password</string>
+    <string name="birth_date_mm_dd_yyyy">Birth Date (MM/DD/YYYY)</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="choose_image">choose image</string>
+    <string name="btnRegister">Register</string>
+    <string name="back_to_login">Back to Login</string>
+    <string name="moveToRegisterFromLogin">Register</string>
+    <string name="loginTitle">Log In</string>
+    <string name="appName">SunMail</string>
+    <string name="btnLogout">Log out</string>
+
+    <string-array name="gender_array">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
+    </string-array>
 </resources>
