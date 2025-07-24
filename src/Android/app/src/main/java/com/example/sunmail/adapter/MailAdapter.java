@@ -3,6 +3,7 @@ package com.example.sunmail.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.example.sunmail.viewmodel.MailViewModel;
 import com.example.sunmail.R;
 import com.example.sunmail.activities.ViewMailActivity;
 import com.example.sunmail.model.Mail;
@@ -20,13 +21,22 @@ import java.util.List;
 import java.util.Map;
 
 public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder> {
+    private MailViewModel mailViewModel;
+    private String currentLabel;
 
     private List<Mail> mailList;
     private Map<String, String> userMap = new HashMap<>();
 
-    public MailAdapter(List<Mail> mailList) {
+    public MailAdapter(List<Mail> mailList, MailViewModel mailViewModel, String label) {
         this.mailList = mailList;
+        this.mailViewModel = mailViewModel;
+        this.currentLabel = label;
     }
+
+    public void setCurrentLabel(String label) {
+        this.currentLabel = label;
+    }
+
 
     @Override
     public MailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -71,14 +81,10 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
             holder.sender.setTypeface(null, Typeface.NORMAL);
         }
 
-//        // (Optionnel) : gestion clic sur étoile
-//        holder.star.setOnClickListener(v -> {
-//            // Ici tu peux ajouter une logique pour étoiler ou dé-étoiler
-//            // mail.setStarred(!mail.isStarred());
-//            // notifyItemChanged(position);
-//        });
-
         holder.itemView.setOnClickListener(v -> {
+            if (mail!=null && mailViewModel != null && mail.getId() != null && currentLabel != null) {
+                mailViewModel.markMailAsRead(mail.getId(), currentLabel, mail);
+            }
             Context context = v.getContext();
             Intent intent = new Intent(context, ViewMailActivity.class);
             intent.putExtra("mail", mail);

@@ -31,9 +31,11 @@ public class Mail implements Serializable {
         this.createdAt = createdAt;
         this.id = id;
     }
-    public String getId(){
+
+    public String getId() {
         return id;
     }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -63,9 +65,10 @@ public class Mail implements Serializable {
             return snippet.substring(0, MAX_SNIPPET_LENGTH) + "...";
         }
     }
-public String getBody(){
+
+    public String getBody() {
         return snippet;
-}
+    }
 
     public String getTime() {
         return time;
@@ -78,4 +81,5 @@ public String getBody(){
     public boolean isRead() {
         return read;
     }
+
 }

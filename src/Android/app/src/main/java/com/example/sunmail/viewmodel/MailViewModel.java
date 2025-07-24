@@ -1,6 +1,7 @@
 package com.example.sunmail.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -45,7 +46,9 @@ public class MailViewModel extends AndroidViewModel {
         return inboxMails;
     }
 
-    public LiveData<String> getDeleteResult() { return deleteResult; }
+    public LiveData<String> getDeleteResult() {
+        return deleteResult;
+    }
 
     public void deleteMail(String mailId) {
         mailRepository.deleteMail(mailId, new SimpleCallback<Void>() {
@@ -53,11 +56,29 @@ public class MailViewModel extends AndroidViewModel {
             public void onSuccess(Void ignored) {
                 deleteResult.postValue("success");
             }
+
             @Override
             public void onError(String errorMsg) {
                 deleteResult.postValue(errorMsg);
             }
         });
     }
+
+    public void markMailAsRead(String mailId, String label, Mail mail) {
+        mailRepository.markMailAsRead(mailId, label, mail, new SimpleCallback<Void>() {
+            @Override
+            public void onSuccess(Void data) {
+                Log.d("PATCH00", "Calling PATCH for mail: " + mailId + " label: " + label);
+                // Optionnel : reload les mails pour MAJ read/unread
+                loadMails(label); // à activer si tu veux refresh direct
+            }
+
+            @Override
+            public void onError(String errorMsg) {
+                // Optionnel: Log, Toast
+            }
+        });
+    }
+
 
 }

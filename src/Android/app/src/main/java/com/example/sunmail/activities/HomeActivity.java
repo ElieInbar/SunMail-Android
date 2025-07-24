@@ -71,9 +71,9 @@ public class HomeActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swipeRefresh);
         recyclerView = findViewById(R.id.emails_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mailAdapter = new MailAdapter(new ArrayList<>());
-        recyclerView.setAdapter(mailAdapter);
         mailViewModel = new ViewModelProvider(this).get(MailViewModel.class);
+        mailAdapter = new MailAdapter(new ArrayList<>(), mailViewModel, label);
+        recyclerView.setAdapter(mailAdapter);
         AuthRepository repository = new AuthRepository(getApplication()); // ou passe l’Application si besoin
         UserViewModelFactory userFactory = new UserViewModelFactory(repository);
         userViewModel = new ViewModelProvider(this, userFactory).get(UserViewModel.class);
@@ -201,13 +201,11 @@ public class HomeActivity extends AppCompatActivity {
                 message = "Other option selected";
             }
 
-            // 👉 1. Mets à jour la variable globale label
             label = selectedLabel;
 
-            // 👉 2. Recharge les mails du nouveau label
+            mailAdapter.setCurrentLabel(label);
             mailViewModel.loadMails(label);
 
-            // Affiche le toast comme avant
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             drawerLayout.closeDrawers(); // Closes the drawer after selection
             return true;
