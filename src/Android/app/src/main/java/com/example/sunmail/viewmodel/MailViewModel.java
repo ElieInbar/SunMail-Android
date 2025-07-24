@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.sunmail.model.Mail;
 import com.example.sunmail.repository.MailRepository;
+import com.example.sunmail.util.SimpleCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class MailViewModel extends AndroidViewModel {
     private MailRepository mailRepository;
     private MutableLiveData<List<Mail>> mails = new MutableLiveData<>();
+    private final MutableLiveData<String> deleteResult = new MutableLiveData<>();
 
     public MailViewModel(Application application) {
         super(application);
@@ -25,8 +27,8 @@ public class MailViewModel extends AndroidViewModel {
         return mails;
     }
 
-    public void loadMails() {
-        mailRepository.fetchMails(mails);
+    public void loadMails(String label) {
+        mailRepository.fetchMails(mails, label);
     }
 
     public LiveData<List<Mail>> getInboxMails(String myUserId) {
@@ -41,6 +43,21 @@ public class MailViewModel extends AndroidViewModel {
             inboxMails.setValue(filtered);
         });
         return inboxMails;
+    }
+
+    public LiveData<String> getDeleteResult() { return deleteResult; }
+
+    public void deleteMail(String mailId) {
+        mailRepository.deleteMail(mailId, new SimpleCallback<Void>() {
+            @Override
+            public void onSuccess(Void ignored) {
+                deleteResult.postValue("success");
+            }
+            @Override
+            public void onError(String errorMsg) {
+                deleteResult.postValue(errorMsg);
+            }
+        });
     }
 
 }

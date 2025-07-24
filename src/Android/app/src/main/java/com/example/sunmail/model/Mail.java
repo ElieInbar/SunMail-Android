@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Mail implements Serializable {
+    private String id;
     @SerializedName("from")
     private String sender;
     @SerializedName("to")
@@ -19,7 +20,7 @@ public class Mail implements Serializable {
     private Date createdAt;
 
     public Mail(String sender, String receiver, String subject, String snippet, String time, boolean read, boolean starred
-            , Date createdAt) {
+            , Date createdAt, String id) {
         this.sender = sender;
         this.receiver = receiver;
         this.subject = subject;
@@ -28,8 +29,11 @@ public class Mail implements Serializable {
         this.read = read;
         this.starred = starred;
         this.createdAt = createdAt;
+        this.id = id;
     }
-
+    public String getId(){
+        return id;
+    }
     public Date getCreatedAt() {
         return createdAt;
     }

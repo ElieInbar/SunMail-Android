@@ -55,6 +55,7 @@ public class HomeActivity extends AppCompatActivity {
     private UserViewModel userViewModel;
     private String myUserId = null;
     private String username = null;
+    private String label = "inbox";
 
 
     @Override
@@ -81,7 +82,7 @@ public class HomeActivity extends AppCompatActivity {
             // Passe la map à l’adapter
             mailAdapter.setUserMap(userMap);
             // Charge les mails uniquement quand la map est prête
-            mailViewModel.loadMails();
+            mailViewModel.loadMails(label);
         });
         userViewModel.fetchAllUsers();
 
@@ -111,11 +112,11 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            mailViewModel.loadMails();
+            mailViewModel.loadMails(label);
         });
 
         swipeRefreshLayout.setRefreshing(true);
-        mailViewModel.loadMails();
+        mailViewModel.loadMails(label);
 
 
         // TODO: user's session info
@@ -139,6 +140,12 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mailViewModel.loadMails(label);
+    }
+
 
     // Method to bind layout views to variables
     private void initViews() {
@@ -157,38 +164,55 @@ public class HomeActivity extends AppCompatActivity {
         // Handles selection of navigation menu items
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            String message;
+            String message = "";
+            String selectedLabel = label; // par défaut garde le label courant
 
-            // Shows a different message depending on the selected item
             if (id == R.id.nav_inbox) {
+                selectedLabel = "inbox";
                 message = "Inbox selected";
             } else if (id == R.id.nav_starred) {
+                selectedLabel = "starred";
                 message = "Starred selected";
             } else if (id == R.id.nav_important) {
+                selectedLabel = "important";
                 message = "Important selected";
             } else if (id == R.id.nav_sent) {
+                selectedLabel = "sent";
                 message = "Sent selected";
             } else if (id == R.id.nav_drafts) {
+                selectedLabel = "drafts";
                 message = "Drafts selected";
             } else if (id == R.id.nav_all_mail) {
+                selectedLabel = "all";
                 message = "All Mail selected";
             } else if (id == R.id.nav_spam) {
+                selectedLabel = "spam";
                 message = "Spam selected";
             } else if (id == R.id.nav_trash) {
+                selectedLabel = "trash";
                 message = "Trash selected";
             } else if (id == R.id.nav_theme) {
+                selectedLabel = "inbox";
                 message = "Theme changed";
             } else if (id == R.id.nav_help) {
+                selectedLabel = "inbox";
                 message = "Help information";
             } else {
                 message = "Other option selected";
             }
 
-            // Displays a Toast with the corresponding message
+            // 👉 1. Mets à jour la variable globale label
+            label = selectedLabel;
+
+            // 👉 2. Recharge les mails du nouveau label
+            mailViewModel.loadMails(label);
+
+            // Affiche le toast comme avant
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             drawerLayout.closeDrawers(); // Closes the drawer after selection
             return true;
         });
+
 
     }
 
