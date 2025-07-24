@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!--
-    DrawerLayout (root)
-    ├── ConstraintLayout (main content)
-    │   ├── Toolbar
-    │   ├── RecyclerView
-    │   └── FAB
-    └── NavigationView (drawer)
-    DrawerLayout is the root of the layout.
-    It displays a side menu (navigation drawer) that can be opened/closed by the user.
-    It is a container that manages both the main screen content and the navigation panel.
--->
 <androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -18,22 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--
-        ConstraintLayout contains all the main screen content.
-        It allows flexible positioning of elements using constraints.
-        Here, it organizes the toolbar, the email list, and the floating button.
-    -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ffffff">
 
-        <!--
-            Toolbar: top app bar.
-            Contains the search bar, menu button, and profile button.
-            Customized here with a white background, elevation (shadow), and internal margins.
-        -->
+        <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -47,10 +26,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!--
-                CardView: used to style the search bar with rounded corners and a slight shadow.
-                This gives a modern look and highlights the search area.
-            -->
+            <!-- CardView: search bar -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,13 +37,6 @@
                 app:cardElevation="2dp"
                 app:contentPadding="8dp">
 
-                <!--
-                    Horizontal LinearLayout to organize the search bar elements:
-                    - hamburger menu button on the left
-                    - search field in the center
-                    - profile button on the right
-                    Center_vertical gravity aligns elements vertically.
-                -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -76,12 +45,6 @@
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp">
 
-                    <!--
-                        ImageButton: hamburger menu button.
-                        Opens the side menu (Drawer).
-                        Icon is set by @drawable/baseline_menu_24.
-                        Transparent background and ripple effect enabled.
-                    -->
                     <ImageButton
                         android:id="@+id/menu_button"
                         android:layout_width="50dp"
@@ -91,12 +54,6 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/baseline_menu_24" />
 
-                    <!--
-                        EditText: search field.
-                        Allows the user to enter text to filter emails.
-                        Flexible width using layout_weight=1 to take all available space.
-                        Transparent background to blend into the CardView.
-                    -->
                     <EditText
                         android:id="@+id/search_edittext"
                         android:layout_width="0dp"
@@ -113,12 +70,6 @@
                         android:textColorHint="#5f6368"
                         android:textSize="16sp" />
 
-                    <!--
-                        TextView: circular profile button.
-                        Displays the user's initial (here "E").
-                        Custom background with a blue circular drawable.
-                        Used to access the user profile or settings.
-                    -->
                     <TextView
                         android:id="@+id/profile_button"
                         android:layout_width="48dp"
@@ -128,39 +79,33 @@
                         android:contentDescription="Profile"
                         android:focusable="true"
                         android:gravity="center"
-                        android:text="E"
                         android:textColor="#ffffff"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-
         </androidx.appcompat.widget.Toolbar>
 
-        <!--
-            RecyclerView: vertical list to display emails.
-            Efficiently displays a large amount of data.
-            Placed below the Toolbar and takes all remaining space.
-        -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/emails_recyclerview"
-            android:layout_width="match_parent"
+        <!-- SWIPE REFRESH autour du RecyclerView -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:background="#FFFFFF"
-            android:clipToPadding="false"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <!--
-            ImageButton: floating action button (FAB) to compose a new email.
-            Positioned at the bottom right of the screen.
-            The "+" icon is set by @drawable/plus.
-            Transparent background to show only the icon.
-        -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/emails_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:clipToPadding="false"/>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- FAB pour composer un mail -->
         <ImageButton
             android:id="@+id/btn_compose"
             android:layout_width="?attr/actionBarSize"
@@ -177,12 +122,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--
-        NavigationView: side panel for navigation.
-        Appears by swiping from the left or pressing the menu button.
-        Contains a menu defined in @menu/drawer_menu and a custom header.
-        Fixed width of 340dp to follow Material Design standards.
-    -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
         android:layout_width="340dp"

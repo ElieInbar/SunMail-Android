@@ -1,9 +1,10 @@
 package com.example.sunmail.viewmodel;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.AndroidViewModel;
-import android.app.Application;
 
 import com.example.sunmail.model.Mail;
 import com.example.sunmail.repository.MailRepository;
@@ -11,41 +12,35 @@ import com.example.sunmail.repository.MailRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class MailViewModel extends AndroidViewModel {
-    private MutableLiveData<List<Mail>> mails;
-    private MailRepository repository;
+    private MailRepository mailRepository;
+    private MutableLiveData<List<Mail>> mails = new MutableLiveData<>();
 
     public MailViewModel(Application application) {
         super(application);
-        repository = new MailRepository(application); // <--- Ici on passe un context valide
-        mails = new MutableLiveData<>();
+        mailRepository = new MailRepository(application);
     }
 
     public LiveData<List<Mail>> getMails() {
         return mails;
     }
 
-    public void fetchMails() {
-        repository.getMails(new Callback<List<Mail>>() {
-            @Override
-            public void onResponse(Call<List<Mail>> call, Response<List<Mail>> response) {
-                if (response.isSuccessful()) {
-                    mails.postValue(response.body());
-                }
-            }
-            @Override
-            public void onFailure(Call<List<Mail>> call, Throwable t) {
-                mails.postValue(new ArrayList<>());
-            }
-        });
+    public void loadMails() {
+        mailRepository.fetchMails(mails);
     }
 
-    public void login(String email, String password, Callback<Void> callback) {
-        repository.login(email, password, callback);
+    public LiveData<List<Mail>> getInboxMails(String myUserId) {
+        MutableLiveData<List<Mail>> inboxMails = new MutableLiveData<>();
+        getMails().observeForever(allMails -> {
+            List<Mail> filtered = new ArrayList<>();
+            for (Mail mail : allMails) {
+                if (myUserId.equals(mail.getReceiver())) {
+                    filtered.add(mail);
+                }
+            }
+            inboxMails.setValue(filtered);
+        });
+        return inboxMails;
     }
 
 }
