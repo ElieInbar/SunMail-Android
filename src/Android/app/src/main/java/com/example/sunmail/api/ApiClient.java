@@ -23,4 +23,17 @@ public class ApiClient {
         }
         return retrofit;
     }
+
+    public static Retrofit getWithToken(String token) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new AuthCookieInterceptor(token))
+                .build();
+
+        return new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
 }
