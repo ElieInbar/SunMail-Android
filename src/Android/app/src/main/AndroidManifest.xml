@@ -37,6 +37,8 @@
             android:exported="false" />
 
         <activity android:name=".activities.HomeActivity" />
+        <activity android:name=".activities.ViewMailActivity" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

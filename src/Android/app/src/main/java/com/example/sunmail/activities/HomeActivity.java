@@ -1,26 +1,45 @@
 package com.example.sunmail.activities;
 
-import android.content.DialogInterface;
 import android.util.Log;
-import android.widget.Button;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.sunmail.repository.AuthRepository;
 import com.example.sunmail.viewmodel.HomeViewModel;
-import androidx.appcompat.app.AlertDialog;
+
 import android.widget.TextView;
 import android.view.View;
 import android.widget.PopupMenu;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.example.sunmail.R;
+import com.example.sunmail.adapter.MailAdapter;
+import com.example.sunmail.model.Mail;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import com.example.sunmail.viewmodel.MailViewModel;
+import com.example.sunmail.viewmodel.UserViewModelFactory;
 import com.google.android.material.navigation.NavigationView;
+import com.example.sunmail.viewmodel.UserViewModel;
+
 
 public class HomeActivity extends AppCompatActivity {
     // Declaration of main views
@@ -28,22 +47,88 @@ public class HomeActivity extends AppCompatActivity {
     private ImageButton menuButton;
     private NavigationView navigationView;
     private ImageButton composeButton;
+    private MailViewModel mailViewModel;
+    private MailAdapter mailAdapter;
+    private RecyclerView recyclerView;
     private HomeViewModel homeViewModel;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private UserViewModel userViewModel;
+    private String myUserId = null;
+    private String username = null;
+    private String label = "inbox";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home); // Sets the activity layout
+        setContentView(R.layout.activity_home);
 
-        initViews();    // Initializes the views
-        setupDrawer();  // Configures the navigation drawer
-        setupComposeButton(); // Configures the compose button
+        initViews();
+        setupDrawer();
+        setupComposeButton();
         setupLogout();
+
+        swipeRefreshLayout = findViewById(R.id.swipeRefresh);
+        recyclerView = findViewById(R.id.emails_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mailViewModel = new ViewModelProvider(this).get(MailViewModel.class);
+        mailAdapter = new MailAdapter(new ArrayList<>(), mailViewModel, label);
+        recyclerView.setAdapter(mailAdapter);
+        AuthRepository repository = new AuthRepository(getApplication()); // ou passe l’Application si besoin
+        UserViewModelFactory userFactory = new UserViewModelFactory(repository);
+        userViewModel = new ViewModelProvider(this, userFactory).get(UserViewModel.class);
+
+        userViewModel.getUserMap().observe(this, userMap -> {
+            // Passe la map à l’adapter
+            mailAdapter.setUserMap(userMap);
+            // Charge les mails uniquement quand la map est prête
+            mailViewModel.loadMails(label);
+        });
+        userViewModel.fetchAllUsers();
+
+
+        mailViewModel.getMails().observe(this, mails -> {
+            if (myUserId == null || mails == null) {
+                mailAdapter.setMailList(new ArrayList<>()); // pas de mails à afficher
+                swipeRefreshLayout.setRefreshing(false);
+                return;
+            }
+
+            List<Mail> filteredMails = new ArrayList<>();
+            for (Mail mail : mails) {
+                // Adapte le nom du champ ! Ici je suppose mail.getRecipient()
+                if (myUserId.equals(mail.getReceiver())) {
+                    filteredMails.add(mail);
+                }
+            }
+            Collections.sort(filteredMails, (m1, m2) -> {
+                Date d1 = m1.getCreatedAt();
+                Date d2 = m2.getCreatedAt();
+                // Plus récent d'abord (ordre décroissant)
+                return d2.compareTo(d1);
+            });
+            mailAdapter.setMailList(filteredMails);
+            swipeRefreshLayout.setRefreshing(false);
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            mailViewModel.loadMails(label);
+        });
+
+        swipeRefreshLayout.setRefreshing(true);
+        mailViewModel.loadMails(label);
+
 
         // TODO: user's session info
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         homeViewModel.getSession().observe(this, session -> {
             if (session != null) {
+                myUserId = session.userId;
+                username = session.userName;
+                TextView profileButton = findViewById(R.id.profile_button);
+                if (profileButton != null) {
+                    profileButton.setText(username == null || username.isEmpty() ? "?" : username.substring(0, 1).toUpperCase());
+                }
                 String info = "userId=" + session.userId +
                         ", userName=" + session.userName +
                         ", email=" + session.email +
@@ -54,6 +139,13 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mailViewModel.loadMails(label);
+    }
+
 
     // Method to bind layout views to variables
     private void initViews() {
@@ -72,38 +164,53 @@ public class HomeActivity extends AppCompatActivity {
         // Handles selection of navigation menu items
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            String message;
+            String message = "";
+            String selectedLabel = label; // par défaut garde le label courant
 
-            // Shows a different message depending on the selected item
             if (id == R.id.nav_inbox) {
+                selectedLabel = "inbox";
                 message = "Inbox selected";
             } else if (id == R.id.nav_starred) {
+                selectedLabel = "starred";
                 message = "Starred selected";
             } else if (id == R.id.nav_important) {
+                selectedLabel = "important";
                 message = "Important selected";
             } else if (id == R.id.nav_sent) {
+                selectedLabel = "sent";
                 message = "Sent selected";
             } else if (id == R.id.nav_drafts) {
+                selectedLabel = "drafts";
                 message = "Drafts selected";
             } else if (id == R.id.nav_all_mail) {
+                selectedLabel = "all";
                 message = "All Mail selected";
             } else if (id == R.id.nav_spam) {
+                selectedLabel = "spam";
                 message = "Spam selected";
             } else if (id == R.id.nav_trash) {
+                selectedLabel = "trash";
                 message = "Trash selected";
             } else if (id == R.id.nav_theme) {
+                selectedLabel = "inbox";
                 message = "Theme changed";
             } else if (id == R.id.nav_help) {
+                selectedLabel = "inbox";
                 message = "Help information";
             } else {
                 message = "Other option selected";
             }
 
-            // Displays a Toast with the corresponding message
+            label = selectedLabel;
+
+            mailAdapter.setCurrentLabel(label);
+            mailViewModel.loadMails(label);
+
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             drawerLayout.closeDrawers(); // Closes the drawer after selection
             return true;
         });
+
 
     }
 

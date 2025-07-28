@@ -32,7 +32,7 @@ public class AuthRepository {
     private final AuthService api;
 
     public AuthRepository(Application app) {
-        api = ApiClient.get().create(AuthService.class);
+        api = ApiClient.get(app).create(AuthService.class);
     }
 
     public void login(String email, String password, SimpleCallback<String> callback) {
