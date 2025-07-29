@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">\
+    <group
+        android:id="@+id/nav_group_custom_labels"
+        android:checkableBehavior="single" />
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_inbox"
@@ -33,18 +36,11 @@
             android:id="@+id/nav_trash"
             android:icon="@drawable/ic_trash"
             android:title="Trash" />
-    </group>
 
-    <item android:title="Other">
-        <menu>
-            <item
-                android:id="@+id/nav_theme"
-                android:icon="@drawable/ic_theme"
-                android:title="Theme" />
-            <item
-                android:id="@+id/nav_help"
-                android:icon="@drawable/ic_help"
-                android:title="Help" />
-        </menu>
-    </item>
+        <item
+            android:id="@+id/nav_create_label"
+            android:icon="@drawable/ic_label"
+            android:title="Create a label" />
+
+    </group>
 </menu>

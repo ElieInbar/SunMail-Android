@@ -5,9 +5,18 @@ import android.util.Log;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.sunmail.api.ApiClient;
+import com.example.sunmail.api.LabelApi;
+import com.example.sunmail.model.Label;
+import com.example.sunmail.model.LabelRequest;
 import com.example.sunmail.repository.AuthRepository;
 import com.example.sunmail.viewmodel.HomeViewModel;
 
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -35,10 +44,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.example.sunmail.viewmodel.LabelViewModel;
 import com.example.sunmail.viewmodel.MailViewModel;
 import com.example.sunmail.viewmodel.UserViewModelFactory;
 import com.google.android.material.navigation.NavigationView;
 import com.example.sunmail.viewmodel.UserViewModel;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -56,6 +69,8 @@ public class HomeActivity extends AppCompatActivity {
     private String myUserId = null;
     private String username = null;
     private String label = "inbox";
+    private LabelViewModel labelViewModel;
+
 
 
     @Override
@@ -77,6 +92,13 @@ public class HomeActivity extends AppCompatActivity {
         AuthRepository repository = new AuthRepository(getApplication()); // ou passe l’Application si besoin
         UserViewModelFactory userFactory = new UserViewModelFactory(repository);
         userViewModel = new ViewModelProvider(this, userFactory).get(UserViewModel.class);
+        labelViewModel = new ViewModelProvider(this).get(LabelViewModel.class);
+        labelViewModel.fetchLabels();
+
+        labelViewModel.getLabels().observe(this, labels -> {
+            if (labels == null || labels.isEmpty()) return;
+            addCustomLabelsToDrawer(labels);
+        });
 
         userViewModel.getUserMap().observe(this, userMap -> {
             // Passe la map à l’adapter
@@ -146,6 +168,96 @@ public class HomeActivity extends AppCompatActivity {
         mailViewModel.loadMails(label);
     }
 
+    private void addCustomLabelsToDrawer(List<Label> labels) {
+        Menu menu = navigationView.getMenu();
+        int groupId = R.id.nav_group_custom_labels;
+        menu.removeGroup(groupId);
+
+        for (Label label : labels) {
+            String name = label.getName().toLowerCase();
+            if (name.equals("inbox") || name.equals("spam")) continue;
+
+            MenuItem item = menu.add(groupId, Menu.NONE, Menu.NONE, " "); // un espace
+
+
+            // Crée une vue customisée
+            View itemView = getLayoutInflater().inflate(R.layout.item_drawer_label, navigationView, false);
+            itemView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                Log.d("LayoutDebug", "itemView width: " + itemView.getWidth());
+            });
+
+
+            TextView labelName = itemView.findViewById(R.id.label_name);
+            ImageView optionsButton = itemView.findViewById(R.id.label_options);
+
+            labelName.setText(label.getName());
+
+            // Action quand on clique sur le nom du label
+            labelName.setOnClickListener(v -> {
+                this.label = label.getName();
+                mailAdapter.setCurrentLabel(label.getName());
+                mailViewModel.loadMails(label.getName());
+                drawerLayout.closeDrawers();
+            });
+
+            // Action sur le bouton des 3 points
+            optionsButton.setOnClickListener(v -> showLabelOptionsPopup(v, label));
+
+            item.setActionView(itemView);
+        }
+    }
+    private void showLabelOptionsPopup(View anchor, Label label) {
+        PopupMenu popup = new PopupMenu(this, anchor);
+        popup.getMenu().add("Edit");
+        popup.getMenu().add("Delete");
+
+        popup.setOnMenuItemClickListener(item -> {
+            String title = item.getTitle().toString();
+            if (title.equals("Edit")) {
+                showLabelOptionsDialog(label);
+            } else if (title.equals("Delete")) {
+                confirmDeleteLabel(label);
+            }
+            return true;
+        });
+
+        popup.show();
+    }
+    private void confirmDeleteLabel(Label label) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete label")
+                .setMessage("Do you want to delete this label \"" + label.getName() + "\" ?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    labelViewModel.deleteLabel(label.getId());
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+
+    private void showLabelOptionsDialog(Label label) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit the label");
+
+        final View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_label, null);
+        EditText input = dialogView.findViewById(R.id.label_name_input);
+        input.setText(label.getName()); // pré-remplit avec l’ancien nom
+
+        builder.setView(dialogView);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String newName = input.getText().toString().trim();
+            if (!newName.isEmpty() && !newName.equals(label.getName())) {
+                labelViewModel.updateLabel(label.getId(), newName);
+            } else {
+                Toast.makeText(this, "Name not changed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Delete", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
 
     // Method to bind layout views to variables
     private void initViews() {
@@ -165,7 +277,7 @@ public class HomeActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             String message = "";
-            String selectedLabel = label; // par défaut garde le label courant
+            String selectedLabel = label;
 
             if (id == R.id.nav_inbox) {
                 selectedLabel = "inbox";
@@ -191,12 +303,9 @@ public class HomeActivity extends AppCompatActivity {
             } else if (id == R.id.nav_trash) {
                 selectedLabel = "trash";
                 message = "Trash selected";
-            } else if (id == R.id.nav_theme) {
-                selectedLabel = "inbox";
-                message = "Theme changed";
-            } else if (id == R.id.nav_help) {
-                selectedLabel = "inbox";
-                message = "Help information";
+            } else if (id == R.id.nav_create_label) {
+                message = "Create a label";
+                showCreateLabelDialog();
             } else {
                 message = "Other option selected";
             }
@@ -210,9 +319,30 @@ public class HomeActivity extends AppCompatActivity {
             drawerLayout.closeDrawers(); // Closes the drawer after selection
             return true;
         });
-
-
     }
+
+    private void showCreateLabelDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Create a new label");
+
+        final View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_label, null);
+        builder.setView(dialogView);
+
+        builder.setPositiveButton("Create", (dialog, which) -> {
+            EditText labelInput = dialogView.findViewById(R.id.label_name_input);
+            String labelName = labelInput.getText().toString().trim();
+
+            if (!labelName.isEmpty()) {
+                labelViewModel.createLabel(labelName);
+            } else {
+                Toast.makeText(this, "Label's name cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
 
     // Handles the back button behavior
     @Override

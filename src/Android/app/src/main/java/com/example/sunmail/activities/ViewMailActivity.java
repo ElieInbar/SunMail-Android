@@ -75,12 +75,12 @@ public class ViewMailActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_delete) {
             // Confirmation
             new AlertDialog.Builder(this)
-                    .setTitle("Supprimer")
-                    .setMessage("Supprimer ce mail")
-                    .setPositiveButton("Oui", (dialog, which) -> {
+                    .setTitle("Delete")
+                    .setMessage("Delete this Mail")
+                    .setPositiveButton("Yes", (dialog, which) -> {
                         mailViewModel.deleteMail(mail.getId());
                     })
-                    .setNegativeButton("Non", null)
+                    .setNegativeButton("No", null)
                     .show();
             return true;
         }
