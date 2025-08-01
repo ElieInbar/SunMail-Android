@@ -95,4 +95,22 @@ public class ComposeViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public void createDraftAndSend(ComposeForm form) {
+        // First create the draft
+        repository.createDraft(form, new SimpleCallback<Mail>() {
+            @Override
+            public void onSuccess(Mail draft) {
+                Log.d("ComposeViewModel", "Draft created successfully, now sending...");
+                // Draft created successfully, now send it
+                sendMail(draft.getId());
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e("ComposeViewModel", "Create draft failed: " + errorMessage);
+                sendResult.postValue(new AuthResult.Error(errorMessage));
+            }
+        });
+    }
 }
