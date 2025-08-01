@@ -1,26 +1,26 @@
 package com.example.sunmail.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.sunmail.viewmodel.MailViewModel;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sunmail.R;
 import com.example.sunmail.model.Mail;
-
-import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.ViewModelProvider;
+import com.example.sunmail.viewmodel.MailViewModel;
 
 
 public class ViewMailActivity extends AppCompatActivity {
     private Mail mail;
     private MailViewModel mailViewModel;
+    private String senderName; // Store sender name for reply/forward
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,17 +48,20 @@ public class ViewMailActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> finish());
 
         // Retrieve sender's username from Intent
-        String username = (String) getIntent().getSerializableExtra("senderName");
-        String sunmail = username.concat("@sunmail.com");
+        senderName = (String) getIntent().getSerializableExtra("senderName");
+        String sunmail = senderName.concat("@sunmail.com");
 
         // Populate UI with mail data if available
         if (mail != null) {
             subject.setText(mail.getSubject());
-            sender.setText(username);
+            sender.setText(senderName);
             body.setText(mail.getBody());
             senderMail.setText(sunmail);
-            avatar.setText(username.isEmpty() ? "?" : username.substring(0, 1).toUpperCase());
+            avatar.setText(senderName.isEmpty() ? "?" : senderName.substring(0, 1).toUpperCase());
         }
+
+        // Setup Reply and Forward buttons
+        setupReplyForwardButtons();
 
         // Retrieve the Mail object again (redundant, can be removed)
         mail = (Mail) getIntent().getSerializableExtra("mail");
@@ -98,5 +101,48 @@ public class ViewMailActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if present
         getMenuInflater().inflate(R.menu.viewmail_menu, menu);
         return true;
+    }
+
+    /**
+     * Setup Reply and Forward buttons
+     */
+    private void setupReplyForwardButtons() {
+        Button replyButton = findViewById(R.id.btn_reply);
+        Button forwardButton = findViewById(R.id.btn_forward);
+
+        replyButton.setOnClickListener(v -> handleReply());
+        forwardButton.setOnClickListener(v -> handleForward());
+    }
+
+    /**
+     * Handle Reply action
+     */
+    private void handleReply() {
+        if (mail == null) {
+            Toast.makeText(this, "Error: No mail to reply to", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(this, ComposeActivity.class);
+        intent.putExtra("ACTION_TYPE", "REPLY");
+        intent.putExtra("ORIGINAL_MAIL", mail);
+        intent.putExtra("SENDER_NAME", senderName);
+        startActivity(intent);
+    }
+
+    /**
+     * Handle Forward action
+     */
+    private void handleForward() {
+        if (mail == null) {
+            Toast.makeText(this, "Error: No mail to forward", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(this, ComposeActivity.class);
+        intent.putExtra("ACTION_TYPE", "FORWARD");
+        intent.putExtra("ORIGINAL_MAIL", mail);
+        intent.putExtra("SENDER_NAME", senderName);
+        startActivity(intent);
     }
 }
