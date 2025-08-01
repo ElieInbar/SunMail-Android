@@ -27,7 +27,8 @@ public class ComposeActivity extends AppCompatActivity {
     // Action type constants
     public static final String ACTION_REPLY = "REPLY";
     public static final String ACTION_FORWARD = "FORWARD";
-    
+    public static final String ACTION_EDIT_DRAFT = "EDIT_DRAFT";
+
     // Declaration of UI views
     private ImageButton backButton;
     private ImageButton sendButton;
@@ -39,7 +40,7 @@ public class ComposeActivity extends AppCompatActivity {
     // ViewModel and state
     private ComposeViewModel viewModel;
     private String currentDraftId = null;
-    
+
     // Reply/Forward data
     private String actionType;
     private Mail originalMail;
@@ -129,9 +130,9 @@ public class ComposeActivity extends AppCompatActivity {
         bodyField.setEnabled(!loading);
     }
 
-    // Setup auto-save functionality
+    // Setup text watchers (no auto-save during typing)
     private void setupAutoSave() {
-        TextWatcher autoSaveWatcher = new TextWatcher() {
+        TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -140,22 +141,15 @@ public class ComposeActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // Remove previous auto-save callback
+                // Just cancel any pending auto-save callbacks
+                // No auto-save during typing - only save on back action
                 autoSaveHandler.removeCallbacks(autoSaveRunnable);
-
-                // Create draft if it doesn't exist and there's content
-                if (currentDraftId == null && hasContent()) {
-                    createInitialDraft();
-                } else if (currentDraftId != null) {
-                    // Schedule auto-save in 2 seconds
-                    autoSaveHandler.postDelayed(autoSaveRunnable, 2000);
-                }
             }
         };
 
-        toField.addTextChangedListener(autoSaveWatcher);
-        subjectField.addTextChangedListener(autoSaveWatcher);
-        bodyField.addTextChangedListener(autoSaveWatcher);
+        toField.addTextChangedListener(textWatcher);
+        subjectField.addTextChangedListener(textWatcher);
+        bodyField.addTextChangedListener(textWatcher);
     }
 
     private boolean hasContent() {
@@ -223,6 +217,8 @@ public class ComposeActivity extends AppCompatActivity {
                 handleReplyIntent();
             } else if (ACTION_FORWARD.equals(actionType) && originalMail != null) {
                 handleForwardIntent();
+            } else if (ACTION_EDIT_DRAFT.equals(actionType)) {
+                handleEditDraftIntent();
             } else {
                 // Handle regular compose with pre-filled data
                 String to = intent.getStringExtra("to");
@@ -234,10 +230,7 @@ public class ComposeActivity extends AppCompatActivity {
                 if (body != null) bodyField.setText(body);
             }
 
-            // If fields are pre-filled, create draft immediately
-            if (hasContent()) {
-                createInitialDraft();
-            }
+            // No longer create draft immediately - only save on back
         }
     }
 
@@ -282,8 +275,78 @@ public class ComposeActivity extends AppCompatActivity {
 
         // Position cursor at the beginning for user to type
         bodyField.setSelection(0);
-        
+
         // Focus on 'To' field since it's empty
         toField.requestFocus();
+    }
+
+    /**
+     * Handle Edit Draft intent - pre-fill fields with draft data
+     */
+    private void handleEditDraftIntent() {
+        Intent intent = getIntent();
+        Mail draftMail = (Mail) intent.getSerializableExtra("DRAFT_MAIL");
+
+        if (draftMail == null) return;
+
+        // IMPORTANT: Set the current draft ID BEFORE filling the fields
+        // to prevent creating a new draft when TextWatchers trigger
+        currentDraftId = draftMail.getId();
+
+        // Pre-fill all fields with draft data
+        String receiverText = "";
+        String receiverName = intent.getStringExtra("RECEIVER_NAME");
+
+        if (receiverName != null && !receiverName.isEmpty()) {
+            // Use the provided receiver name (already processed by MailAdapter)
+            receiverText = receiverName;
+        } else if (draftMail.getReceiver() != null && !draftMail.getReceiver().isEmpty()) {
+            // Fallback: use receiver ID as-is (should rarely happen)
+            receiverText = draftMail.getReceiver();
+        }
+
+        toField.setText(receiverText);
+        subjectField.setText(draftMail.getSubject() != null ? draftMail.getSubject() : "");
+        bodyField.setText(draftMail.getBody() != null ? draftMail.getBody() : "");
+
+        // Focus on the first empty field or body
+        if (toField.getText().toString().trim().isEmpty()) {
+            toField.requestFocus();
+        } else if (subjectField.getText().toString().trim().isEmpty()) {
+            subjectField.requestFocus();
+        } else {
+            bodyField.requestFocus();
+            // Position cursor at the end
+            bodyField.setSelection(bodyField.getText().length());
+        }
+    }
+
+    /**
+     * Handle back button press - save draft if there's content
+     */
+    @Override
+    public void onBackPressed() {
+        saveOnBack();
+        super.onBackPressed();
+    }
+
+    /**
+     * Save or update draft when user goes back
+     */
+    private void saveOnBack() {
+        if (!hasContent()) {
+            // No content, no need to save
+            return;
+        }
+
+        ComposeForm form = getCurrentFormData();
+        
+        if (currentDraftId == null) {
+            // Create new draft
+            viewModel.createDraft(form);
+        } else {
+            // Update existing draft
+            viewModel.updateDraft(currentDraftId, form);
+        }
     }
 }
