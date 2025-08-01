@@ -18,10 +18,16 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.sunmail.R;
 import com.example.sunmail.model.AuthResult;
 import com.example.sunmail.model.ComposeForm;
+import com.example.sunmail.model.Mail;
+import com.example.sunmail.util.ComposeUtils;
 import com.example.sunmail.viewmodel.ComposeViewModel;
 
 // Activity for composing a new email
 public class ComposeActivity extends AppCompatActivity {
+    // Action type constants
+    public static final String ACTION_REPLY = "REPLY";
+    public static final String ACTION_FORWARD = "FORWARD";
+    
     // Declaration of UI views
     private ImageButton backButton;
     private ImageButton sendButton;
@@ -33,6 +39,11 @@ public class ComposeActivity extends AppCompatActivity {
     // ViewModel and state
     private ComposeViewModel viewModel;
     private String currentDraftId = null;
+    
+    // Reply/Forward data
+    private String actionType;
+    private Mail originalMail;
+    private String senderName;
 
     // Auto-save functionality
     private Handler autoSaveHandler = new Handler();
@@ -203,18 +214,76 @@ public class ComposeActivity extends AppCompatActivity {
     private void handleIntentData() {
         Intent intent = getIntent();
         if (intent != null) {
-            String to = intent.getStringExtra("to");
-            String subject = intent.getStringExtra("subject");
-            String body = intent.getStringExtra("body");
+            // Check for Reply/Forward action
+            actionType = intent.getStringExtra("ACTION_TYPE");
+            originalMail = (Mail) intent.getSerializableExtra("ORIGINAL_MAIL");
+            senderName = intent.getStringExtra("SENDER_NAME");
 
-            if (to != null) toField.setText(to);
-            if (subject != null) subjectField.setText(subject);
-            if (body != null) bodyField.setText(body);
+            if (ACTION_REPLY.equals(actionType) && originalMail != null) {
+                handleReplyIntent();
+            } else if (ACTION_FORWARD.equals(actionType) && originalMail != null) {
+                handleForwardIntent();
+            } else {
+                // Handle regular compose with pre-filled data
+                String to = intent.getStringExtra("to");
+                String subject = intent.getStringExtra("subject");
+                String body = intent.getStringExtra("body");
+
+                if (to != null) toField.setText(to);
+                if (subject != null) subjectField.setText(subject);
+                if (body != null) bodyField.setText(body);
+            }
 
             // If fields are pre-filled, create draft immediately
             if (hasContent()) {
                 createInitialDraft();
             }
         }
+    }
+
+    /**
+     * Handle Reply intent - pre-fill fields for reply
+     */
+    private void handleReplyIntent() {
+        if (originalMail == null) return;
+
+        // Set recipient (sender of original mail)
+        String senderEmail = senderName + "@sunmail.com";
+        toField.setText(senderEmail);
+
+        // Set subject with "Re: " prefix
+        String replySubject = ComposeUtils.formatReplySubject(originalMail.getSubject());
+        subjectField.setText(replySubject);
+
+        // Set body with quoted original message
+        String replyBody = ComposeUtils.formatReplyBody(originalMail, senderName);
+        bodyField.setText(replyBody);
+
+        // Position cursor at the beginning for user to type
+        bodyField.setSelection(0);
+    }
+
+    /**
+     * Handle Forward intent - pre-fill fields for forward
+     */
+    private void handleForwardIntent() {
+        if (originalMail == null) return;
+
+        // Leave recipient empty (user will fill)
+        toField.setText("");
+
+        // Set subject with "Fwd: " prefix
+        String forwardSubject = ComposeUtils.formatForwardSubject(originalMail.getSubject());
+        subjectField.setText(forwardSubject);
+
+        // Set body with complete original message
+        String forwardBody = ComposeUtils.formatForwardBody(originalMail, senderName, "You"); // TODO: Get actual recipient name
+        bodyField.setText(forwardBody);
+
+        // Position cursor at the beginning for user to type
+        bodyField.setSelection(0);
+        
+        // Focus on 'To' field since it's empty
+        toField.requestFocus();
     }
 }
