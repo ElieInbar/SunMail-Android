@@ -95,4 +95,55 @@
             android:textColor="#2B2B2B"
             android:lineSpacingExtra="4dp" />
     </ScrollView>
+
+    <!-- Action buttons Reply/Forward at the bottom -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#ffffff"
+        android:padding="16dp"
+        android:elevation="8dp"
+        android:gravity="center">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_reply"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/button_reply_style"
+            android:drawableStart="@drawable/ic_reply"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:text="Reply"
+            android:textColor="#5f6368"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textAllCaps="false"
+            android:stateListAnimator="@null"
+            android:theme="@android:style/Theme.Material.Light" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_forward"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/button_reply_style"
+            android:drawableStart="@drawable/ic_forward"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:text="Forward"
+            android:textColor="#5f6368"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textAllCaps="false"
+            android:stateListAnimator="@null"
+            android:theme="@android:style/Theme.Material.Light" />
+    </LinearLayout>
 </LinearLayout>
