@@ -136,7 +136,9 @@ public class HomeActivity extends AppCompatActivity {
                         ", profilePicture=" + session.profilePicture +
                         ", token=" + session.token;
                 Log.d("UserSessionInfo", info);
-                Toast.makeText(this, info, Toast.LENGTH_LONG).show();
+
+                // Welcome back message for restored session
+                Toast.makeText(this, "Welcome back, " + (username != null ? username : "User") + "!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -233,8 +235,6 @@ public class HomeActivity extends AppCompatActivity {
 
         // Sets the action to perform when the button is clicked
         composeButton.setOnClickListener(v -> {
-            // Shows a Toast message to indicate the button was clicked
-            Toast.makeText(getApplicationContext(), "Compose button clicked", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(HomeActivity.this, ComposeActivity.class);
             startActivity(intent);
         });
