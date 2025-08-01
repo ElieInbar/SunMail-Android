@@ -130,6 +130,10 @@ public class HomeActivity extends AppCompatActivity {
                 if (profileButton != null) {
                     profileButton.setText(username == null || username.isEmpty() ? "?" : username.substring(0, 1).toUpperCase());
                 }
+                
+                // Update drawer header with user information
+                updateDrawerHeader(session.userName, session.email);
+                
                 String info = "userId=" + session.userId +
                         ", userName=" + session.userName +
                         ", email=" + session.email +
@@ -280,6 +284,28 @@ public class HomeActivity extends AppCompatActivity {
                 .setPositiveButton("yes", (dialog, which) -> homeViewModel.logout())
                 .setNegativeButton("no", null)
                 .show();
+    }
+
+    /**
+     * Update drawer header with dynamic user information
+     */
+    private void updateDrawerHeader(String userName, String userEmail) {
+        // Get the header view from NavigationView
+        View headerView = navigationView.getHeaderView(0);
+        
+        if (headerView != null) {
+            // Update user avatar with first letter of username
+            TextView drawerAvatar = headerView.findViewById(R.id.drawer_user_avatar);
+            if (drawerAvatar != null && userName != null && !userName.isEmpty()) {
+                drawerAvatar.setText(userName.substring(0, 1).toUpperCase());
+            }
+            
+            // Update user email
+            TextView drawerEmail = headerView.findViewById(R.id.drawer_user_email);
+            if (drawerEmail != null && userEmail != null && !userEmail.isEmpty()) {
+                drawerEmail.setText(userEmail);
+            }
+        }
     }
 
 }
