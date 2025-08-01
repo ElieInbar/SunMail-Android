@@ -63,10 +63,10 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        initViews();
-        setupDrawer();
-        setupComposeButton();
-        setupLogout();
+        initViews(); // Initialize main views
+        setupDrawer(); // Setup navigation drawer
+        setupComposeButton(); // Setup compose button
+        setupLogout(); // Setup logout functionality
 
         swipeRefreshLayout = findViewById(R.id.swipeRefresh);
         recyclerView = findViewById(R.id.emails_recyclerview);
@@ -74,43 +74,45 @@ public class HomeActivity extends AppCompatActivity {
         mailViewModel = new ViewModelProvider(this).get(MailViewModel.class);
         mailAdapter = new MailAdapter(new ArrayList<>(), mailViewModel, label);
         recyclerView.setAdapter(mailAdapter);
-        AuthRepository repository = new AuthRepository(getApplication()); // ou passe l’Application si besoin
+
+        // Initialize user view model with repository
+        AuthRepository repository = new AuthRepository(getApplication());
         UserViewModelFactory userFactory = new UserViewModelFactory(repository);
         userViewModel = new ViewModelProvider(this, userFactory).get(UserViewModel.class);
 
+        // Observe user map and load mails when ready
         userViewModel.getUserMap().observe(this, userMap -> {
-            // Passe la map à l’adapter
             mailAdapter.setUserMap(userMap);
-            // Charge les mails uniquement quand la map est prête
             mailViewModel.loadMails(label);
         });
         userViewModel.fetchAllUsers();
 
-
+        // Observe mails and update adapter with filtered and sorted mails
         mailViewModel.getMails().observe(this, mails -> {
             if (myUserId == null || mails == null) {
-                mailAdapter.setMailList(new ArrayList<>()); // pas de mails à afficher
+                mailAdapter.setMailList(new ArrayList<>()); // No mails to display
                 swipeRefreshLayout.setRefreshing(false);
                 return;
             }
 
             List<Mail> filteredMails = new ArrayList<>();
             for (Mail mail : mails) {
-                // Adapte le nom du champ ! Ici je suppose mail.getRecipient()
+                // Filter mails for the current user
                 if (myUserId.equals(mail.getReceiver())) {
                     filteredMails.add(mail);
                 }
             }
+            // Sort mails by date (most recent first)
             Collections.sort(filteredMails, (m1, m2) -> {
                 Date d1 = m1.getCreatedAt();
                 Date d2 = m2.getCreatedAt();
-                // Plus récent d'abord (ordre décroissant)
                 return d2.compareTo(d1);
             });
             mailAdapter.setMailList(filteredMails);
             swipeRefreshLayout.setRefreshing(false);
         });
 
+        // Pull-to-refresh listener
         swipeRefreshLayout.setOnRefreshListener(() -> {
             mailViewModel.loadMails(label);
         });
@@ -118,8 +120,7 @@ public class HomeActivity extends AppCompatActivity {
         swipeRefreshLayout.setRefreshing(true);
         mailViewModel.loadMails(label);
 
-
-        // TODO: user's session info
+        // Observe user session info
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         homeViewModel.getSession().observe(this, session -> {
             if (session != null) {
@@ -143,7 +144,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mailViewModel.loadMails(label);
+        mailViewModel.loadMails(label); // Reload mails when activity resumes
     }
 
 
@@ -165,8 +166,9 @@ public class HomeActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             String message = "";
-            String selectedLabel = label; // par défaut garde le label courant
+            String selectedLabel = label; // By default keep the current label
 
+            // Handle navigation menu selections
             if (id == R.id.nav_inbox) {
                 selectedLabel = "inbox";
                 message = "Inbox selected";
@@ -225,6 +227,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    // Setup the compose button and its click action
     private void setupComposeButton() {
         composeButton = findViewById(R.id.btn_compose); // Gets the compose button
 
@@ -237,6 +240,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    // Setup logout functionality and observe session changes
     private void setupLogout() {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         TextView profileButton = findViewById(R.id.profile_button);
@@ -244,6 +248,7 @@ public class HomeActivity extends AppCompatActivity {
             profileButton.setOnClickListener(this::showProfileMenu);
         }
         homeViewModel.getSession().observe(this, session -> {
+            // If session is invalid, redirect to login
             if (session == null || session.token == null || session.token.isEmpty()) {
                 Intent intent = new Intent(HomeActivity.this, com.example.sunmail.activities.LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -253,6 +258,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    // Show profile menu with logout option
     private void showProfileMenu(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         popup.getMenuInflater().inflate(R.menu.profile_menu, popup.getMenu());
@@ -266,6 +272,7 @@ public class HomeActivity extends AppCompatActivity {
         popup.show();
     }
 
+    // Show confirmation dialog for logout
     private void showLogoutDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("logout")
