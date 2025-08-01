@@ -3,7 +3,9 @@ package com.example.sunmail.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -92,6 +94,9 @@ public class ViewMailActivity extends AppCompatActivity {
                     .setNegativeButton("No", null)
                     .show();
             return true;
+        } else if (item.getItemId() == R.id.action_edit_draft) {
+            handleEditDraft();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -100,6 +105,13 @@ public class ViewMailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         // Inflate the menu; this adds items to the action bar if present
         getMenuInflater().inflate(R.menu.viewmail_menu, menu);
+        
+        // Show/hide edit draft icon based on whether this is a draft
+        MenuItem editDraftItem = menu.findItem(R.id.action_edit_draft);
+        if (editDraftItem != null) {
+            editDraftItem.setVisible(isDraftMail());
+        }
+        
         return true;
     }
 
@@ -144,5 +156,31 @@ public class ViewMailActivity extends AppCompatActivity {
         intent.putExtra("ORIGINAL_MAIL", mail);
         intent.putExtra("SENDER_NAME", senderName);
         startActivity(intent);
+    }
+
+    /**
+     * Check if the current mail is a draft
+     */
+    private boolean isDraftMail() {
+        String currentLabel = getIntent().getStringExtra("currentLabel");
+        return mail != null && "drafts".equals(currentLabel);
+    }
+
+    /**
+     * Handle Edit Draft action
+     */
+    private void handleEditDraft() {
+        Intent intent = new Intent(this, ComposeActivity.class);
+        intent.putExtra("ACTION_TYPE", "EDIT_DRAFT");
+        intent.putExtra("DRAFT_MAIL", mail);
+        
+        // Pass receiver name if available (for drafts)
+        String receiverName = getIntent().getStringExtra("receiverName");
+        if (receiverName != null) {
+            intent.putExtra("RECEIVER_NAME", receiverName);
+        }
+        
+        startActivity(intent);
+        finish(); // Close ViewMailActivity
     }
 }
