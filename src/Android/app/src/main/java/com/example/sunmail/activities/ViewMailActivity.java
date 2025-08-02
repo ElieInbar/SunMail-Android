@@ -105,13 +105,13 @@ public class ViewMailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         // Inflate the menu; this adds items to the action bar if present
         getMenuInflater().inflate(R.menu.viewmail_menu, menu);
-        
+
         // Show/hide edit draft icon based on whether this is a draft
         MenuItem editDraftItem = menu.findItem(R.id.action_edit_draft);
         if (editDraftItem != null) {
             editDraftItem.setVisible(isDraftMail());
         }
-        
+
         return true;
     }
 
@@ -122,8 +122,14 @@ public class ViewMailActivity extends AppCompatActivity {
         Button replyButton = findViewById(R.id.btn_reply);
         Button forwardButton = findViewById(R.id.btn_forward);
 
-        replyButton.setOnClickListener(v -> handleReply());
-        forwardButton.setOnClickListener(v -> handleForward());
+        // Hide Reply/Forward buttons for drafts
+        if (isDraftMail()) {
+            replyButton.setVisibility(View.GONE);
+            forwardButton.setVisibility(View.GONE);
+        } else {
+            replyButton.setOnClickListener(v -> handleReply());
+            forwardButton.setOnClickListener(v -> handleForward());
+        }
     }
 
     /**
@@ -173,13 +179,13 @@ public class ViewMailActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ComposeActivity.class);
         intent.putExtra("ACTION_TYPE", "EDIT_DRAFT");
         intent.putExtra("DRAFT_MAIL", mail);
-        
+
         // Pass receiver name if available (for drafts)
         String receiverName = getIntent().getStringExtra("receiverName");
         if (receiverName != null) {
             intent.putExtra("RECEIVER_NAME", receiverName);
         }
-        
+
         startActivity(intent);
         finish(); // Close ViewMailActivity
     }

@@ -108,15 +108,16 @@ public class ComposeActivity extends AppCompatActivity {
             // Cancel any pending auto-save to avoid conflicts
             autoSaveHandler.removeCallbacks(autoSaveRunnable);
 
-            // Force update draft with current data before sending
+            // Handle sending: create draft if needed, then send
+            ComposeForm form = getCurrentFormData();
             if (currentDraftId != null) {
-                ComposeForm form = getCurrentFormData();
+                // Draft exists, update it and send
                 viewModel.updateDraft(currentDraftId, form);
                 // Small delay to ensure update completes before sending
                 autoSaveHandler.postDelayed(() -> viewModel.sendMail(currentDraftId), 100);
             } else {
-                Toast.makeText(this, "Error: No draft to send", Toast.LENGTH_SHORT).show();
-                setLoadingState(false);
+                // No draft exists, create one and then send it automatically
+                viewModel.createDraftAndSend(form);
             }
         });
     }
@@ -340,7 +341,7 @@ public class ComposeActivity extends AppCompatActivity {
         }
 
         ComposeForm form = getCurrentFormData();
-        
+
         if (currentDraftId == null) {
             // Create new draft
             viewModel.createDraft(form);

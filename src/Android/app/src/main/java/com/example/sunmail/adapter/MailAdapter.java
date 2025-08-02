@@ -89,12 +89,12 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
             Intent intent = new Intent(context, ViewMailActivity.class);
             intent.putExtra("mail", mail);
             intent.putExtra("currentLabel", currentLabel);
-            
+
             // Pass sender name
             String senderName1 = userMap.get(senderId);
             if (senderName1 == null) senderName1 = senderId;
             intent.putExtra("senderName", senderName1);
-            
+
             // For drafts, also pass receiver name
             if ("drafts".equals(currentLabel) && mail.getReceiver() != null) {
                 String receiverName = userMap.get(mail.getReceiver());
@@ -107,7 +107,7 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
                 }
                 intent.putExtra("receiverName", receiverName);
             }
-            
+
             context.startActivity(intent);
         });
 
