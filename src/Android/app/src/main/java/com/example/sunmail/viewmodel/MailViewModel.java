@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.sunmail.model.Label;
 import com.example.sunmail.model.Mail;
 import com.example.sunmail.repository.MailRepository;
 import com.example.sunmail.util.SimpleCallback;
@@ -18,11 +19,13 @@ public class MailViewModel extends AndroidViewModel {
     private MailRepository mailRepository;
     private MutableLiveData<List<Mail>> mails = new MutableLiveData<>();
     private final MutableLiveData<String> deleteResult = new MutableLiveData<>();
+    private MutableLiveData<List<Label>> mailLabels = new MutableLiveData<>();
 
     public MailViewModel(Application application) {
         super(application);
         mailRepository = new MailRepository(application);
     }
+
 
     public LiveData<List<Mail>> getMails() {
         return mails;
@@ -68,8 +71,6 @@ public class MailViewModel extends AndroidViewModel {
         mailRepository.markMailAsRead(mailId, label, mail, new SimpleCallback<Void>() {
             @Override
             public void onSuccess(Void data) {
-                Log.d("PATCH00", "Calling PATCH for mail: " + mailId + " label: " + label);
-                // Optionnel : reload les mails pour MAJ read/unread
                 loadMails(label); // à activer si tu veux refresh direct
             }
 
@@ -80,5 +81,11 @@ public class MailViewModel extends AndroidViewModel {
         });
     }
 
+    public LiveData<List<Label>> getMailLabels() {
+        return mailLabels;
+    }
 
+    public void loadLabelsForMail(String mailId) {
+        mailRepository.getLabelsForMail(mailId, mailLabels);
+    }
 }

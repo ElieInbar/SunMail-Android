@@ -3,14 +3,17 @@ package com.example.sunmail.repository;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.sunmail.api.ApiClient;
 import com.example.sunmail.api.MailApi;
+import com.example.sunmail.model.Label;
 import com.example.sunmail.model.Mail;
 import com.example.sunmail.model.ToBody;
 import com.example.sunmail.util.SimpleCallback;
 
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -77,6 +80,26 @@ public class MailRepository {
             }
         });
     }
+
+    public void getLabelsForMail(String mailId, MutableLiveData<List<Label>> labelsLiveData) {
+        mailApi.getLabelsForMail(mailId).enqueue(new Callback<List<Label>>() {
+            @Override
+            public void onResponse(Call<List<Label>> call, Response<List<Label>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    labelsLiveData.postValue(response.body());
+                } else {
+                    Log.e("MailRepository", "Erreur de récupération des labels. Code = " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Label>> call, Throwable t) {
+                Log.e("MailRepository", "Erreur réseau (labels)", t);
+            }
+        });
+    }
+
+
 
 
 }

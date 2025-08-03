@@ -1,5 +1,6 @@
 package com.example.sunmail.api;
 
+import com.example.sunmail.model.Label;
 import com.example.sunmail.model.Mail;
 import com.example.sunmail.model.ToBody;
 
@@ -26,5 +27,10 @@ public interface MailApi {
             @Path("labelName") String labelName,
             @Body ToBody body
     );
+
+    @GET("mails/{id}/labels")
+    Call<List<Label>> getLabelsForMail(@Path("id") String mailId);
+
+
 
 }

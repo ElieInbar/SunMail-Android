@@ -192,7 +192,6 @@ public class HomeActivity extends AppCompatActivity {
 
             labelName.setText(label.getName());
 
-            // Action quand on clique sur le nom du label
             labelName.setOnClickListener(v -> {
                 this.label = label.getName();
                 mailAdapter.setCurrentLabel(label.getName());
@@ -200,7 +199,6 @@ public class HomeActivity extends AppCompatActivity {
                 drawerLayout.closeDrawers();
             });
 
-            // Action sur le bouton des 3 points
             optionsButton.setOnClickListener(v -> showLabelOptionsPopup(v, label));
 
             item.setActionView(itemView);

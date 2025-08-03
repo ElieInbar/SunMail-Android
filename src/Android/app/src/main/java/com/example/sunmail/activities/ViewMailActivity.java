@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.sunmail.model.Label;
 import com.example.sunmail.viewmodel.MailViewModel;
 
 import com.example.sunmail.R;
@@ -45,7 +46,6 @@ public class ViewMailActivity extends AppCompatActivity {
 
         String username = (String) getIntent().getSerializableExtra("senderName");
         String sunmail = username.concat("@sunmail.com");
-        ;
         if (mail != null) {
             subject.setText(mail.getSubject());
             sender.setText(username);
@@ -68,6 +68,25 @@ public class ViewMailActivity extends AppCompatActivity {
                 Toast.makeText(this, "Erreur: " + result, Toast.LENGTH_LONG).show();
             }
         });
+
+        TextView labelList = findViewById(R.id.text_labels);
+        Log.d("ViewMail", "Loading labels for mail ID: " + mail.getId());
+        mailViewModel.loadLabelsForMail(mail.getId());
+
+        mailViewModel.getMailLabels().observe(this, labels -> {
+            Log.d("ViewMail", "Labels received: " + labels);
+            if (labels != null && !labels.isEmpty()) {
+                StringBuilder sb = new StringBuilder("Labels: ");
+                for (Label label : labels) {
+                    sb.append(label.getName()).append(" ");
+                }
+                labelList.setText(sb.toString());
+            } else {
+                labelList.setText("No labels");
+            }
+        });
+
+
     }
 
     @Override
