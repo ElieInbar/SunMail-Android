@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.sunmail.api.ApiClient;
 import com.example.sunmail.api.MailApi;
 import com.example.sunmail.model.Label;
+import com.example.sunmail.model.LabelIdRequest;
 import com.example.sunmail.model.Mail;
 import com.example.sunmail.model.ToBody;
 import com.example.sunmail.util.SimpleCallback;
@@ -100,6 +101,40 @@ public class MailRepository {
     }
 
 
+    public void addLabelToMail(String mailId, String labelId, SimpleCallback<Void> callback) {
+        LabelIdRequest request = new LabelIdRequest(labelId);
+        mailApi.addLabelToMail(mailId, request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Erreur: " + response.code());
+                }
+            }
 
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onError("Erreur réseau: " + t.getMessage());
+            }
+        });
+    }
+    public void removeLabelFromMail(String mailId, String labelId, SimpleCallback<Void> callback) {
+        mailApi.removeLabelFromMail(mailId, labelId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
 
 }

@@ -308,13 +308,14 @@ public class HomeActivity extends AppCompatActivity {
                 message = "Other option selected";
             }
 
-            label = selectedLabel;
+            if (selectedLabel != null && !selectedLabel.equals(label)) {
+                label = selectedLabel;
+                mailAdapter.setCurrentLabel(label);
+                mailViewModel.loadMails(label);
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            }
 
-            mailAdapter.setCurrentLabel(label);
-            mailViewModel.loadMails(label);
-
-            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-            drawerLayout.closeDrawers(); // Closes the drawer after selection
+            drawerLayout.closeDrawers();
             return true;
         });
     }

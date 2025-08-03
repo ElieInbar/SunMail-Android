@@ -24,5 +24,7 @@ public interface LabelApi {
     Call<Void> updateLabel(@Path("id") String id, @Body LabelRequest labelRequest);
     @DELETE("labels/{id}")
     Call<Void> deleteLabel(@Path("id") String id);
+    @GET("labels/name/{name}")
+    Call<Label> getLabelByName(@Path("name") String name);
 
 }

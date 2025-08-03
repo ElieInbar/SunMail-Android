@@ -2,11 +2,13 @@
 package com.example.sunmail.repository;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.sunmail.api.ApiClient;
 import com.example.sunmail.api.LabelApi;
 import com.example.sunmail.model.Label;
 import com.example.sunmail.model.LabelRequest;
+import com.example.sunmail.util.SimpleCallback;
 
 import java.util.List;
 
@@ -27,8 +29,29 @@ public class LabelRepository {
     }
 
     public void getLabels(Callback<List<Label>> callback) {
-        labelApi.getLabels().enqueue(callback);
+        labelApi.getLabels().enqueue(new Callback<List<Label>>() {
+            @Override
+            public void onResponse(Call<List<Label>> call, Response<List<Label>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    for (Label label : response.body()) {
+                        Log.d("LabelRepository", "Label reçu: " + label.getName() + ", userId=" + label.getUserId());
+                    }
+                    callback.onResponse(call, response);
+                } else {
+                    Log.e("LabelRepository", "Response failed: " + response.code());
+                    callback.onResponse(call, response); // Still pass response
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Label>> call, Throwable t) {
+                Log.e("LabelRepository", "Network error", t);
+                callback.onFailure(call, t);
+            }
+        });
     }
+
+
 
     public void updateLabel(String id, String newName, Callback<Void> callback) {
         LabelRequest request = new LabelRequest(newName);
@@ -39,5 +62,8 @@ public class LabelRepository {
         labelApi.deleteLabel(id).enqueue(callback);
     }
 
+    public void getLabelByName(String name, Callback<Label> callback) {
+        labelApi.getLabelByName(name).enqueue(callback);
+    }
 
 }
