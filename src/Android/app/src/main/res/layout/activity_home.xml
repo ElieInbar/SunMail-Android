@@ -10,7 +10,8 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffffff">
+        android:background="?attr/colorSurface"
+        android:fitsSystemWindows="true">
 
         <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
@@ -18,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
-            android:background="#ffffff"
+            android:background="?attr/colorSurface"
             android:elevation="4dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
@@ -32,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                app:cardBackgroundColor="#f1f3f4"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant"
                 app:cardCornerRadius="38dp"
                 app:cardElevation="2dp"
                 app:contentPadding="8dp">
@@ -66,20 +67,20 @@
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp"
                         android:singleLine="true"
-                        android:textColor="#202124"
-                        android:textColorHint="#5f6368"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textColorHint="?attr/colorOnSurfaceVariant"
                         android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/profile_button"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:background="@drawable/profile_circle_blue"
+                        android:background="@drawable/avatar_background"
                         android:clickable="true"
                         android:contentDescription="Profile"
                         android:focusable="true"
                         android:gravity="center"
-                        android:textColor="#ffffff"
+                        android:textColor="@android:color/white"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -101,7 +102,7 @@
                 android:id="@+id/emails_recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
+                android:background="?attr/colorSurface"
                 android:clipToPadding="false"/>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -124,10 +125,10 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
-        android:layout_width="340dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#ffffff"
+        android:background="?attr/colorSurface"
         app:menu="@menu/drawer_menu"
         app:headerLayout="@layout/drawer_header" />
 

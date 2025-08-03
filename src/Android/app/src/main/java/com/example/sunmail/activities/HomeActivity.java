@@ -1,27 +1,24 @@
 package com.example.sunmail.activities;
 
-import android.util.Log;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.lifecycle.ViewModelProvider;
-
-import com.example.sunmail.repository.AuthRepository;
-import com.example.sunmail.viewmodel.HomeViewModel;
-
-import android.widget.TextView;
-import android.view.View;
-import android.widget.PopupMenu;
-
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -29,16 +26,18 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.sunmail.R;
 import com.example.sunmail.adapter.MailAdapter;
 import com.example.sunmail.model.Mail;
+import com.example.sunmail.repository.AuthRepository;
+import com.example.sunmail.util.ThemeManager;
+import com.example.sunmail.viewmodel.HomeViewModel;
+import com.example.sunmail.viewmodel.MailViewModel;
+import com.example.sunmail.viewmodel.UserViewModel;
+import com.example.sunmail.viewmodel.UserViewModelFactory;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import com.example.sunmail.viewmodel.MailViewModel;
-import com.example.sunmail.viewmodel.UserViewModelFactory;
-import com.google.android.material.navigation.NavigationView;
-import com.example.sunmail.viewmodel.UserViewModel;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -56,12 +55,24 @@ public class HomeActivity extends AppCompatActivity {
     private String myUserId = null;
     private String username = null;
     private String label = "inbox";
+    private static boolean isThemeChanging = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Apply saved theme before setting content view
+        int savedThemeMode = ThemeManager.getThemeMode(this);
+        ThemeManager.applyTheme(savedThemeMode);
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // Handle system bars (status bar, navigation bar, notch)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            androidx.core.graphics.Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0); // Don't add bottom padding
+            return insets;
+        });
 
         initViews(); // Initialize main views
         setupDrawer(); // Setup navigation drawer
@@ -129,6 +140,8 @@ public class HomeActivity extends AppCompatActivity {
                 TextView profileButton = findViewById(R.id.profile_button);
                 if (profileButton != null) {
                     profileButton.setText(username == null || username.isEmpty() ? "?" : username.substring(0, 1).toUpperCase());
+                    // Apply the same color generation logic as in other parts of the app
+                    profileButton.setBackground(createCircleDrawable(getColorForUser(username)));
                 }
                 
                 // Update drawer header with user information
@@ -141,8 +154,13 @@ public class HomeActivity extends AppCompatActivity {
                         ", token=" + session.token;
                 Log.d("UserSessionInfo", info);
 
-                // Welcome back message for restored session
-                Toast.makeText(this, "Welcome back, " + (username != null ? username : "User") + "!", Toast.LENGTH_SHORT).show();
+                // Welcome back message for restored session (only if not changing theme)
+                if (!isThemeChanging) {
+                    Toast.makeText(this, "Welcome back, " + (username != null ? username : "User") + "!", Toast.LENGTH_SHORT).show();
+                }
+                
+                // Reset the flag after use
+                isThemeChanging = false;
             }
         });
     }
@@ -200,8 +218,23 @@ public class HomeActivity extends AppCompatActivity {
                 selectedLabel = "trash";
                 message = "Trash selected";
             } else if (id == R.id.nav_theme) {
-                selectedLabel = "inbox";
-                message = "Theme changed";
+                // Toggle theme
+                int currentThemeMode = ThemeManager.getThemeMode(this);
+                int nextThemeMode = ThemeManager.getNextThemeMode(currentThemeMode);
+                
+                // Set flag to indicate theme change
+                isThemeChanging = true;
+                
+                ThemeManager.saveThemeMode(this, nextThemeMode);
+                ThemeManager.applyTheme(nextThemeMode);
+                
+                selectedLabel = label; // Keep current label
+                message = "Theme changed to " + ThemeManager.getThemeName(nextThemeMode);
+                
+                // Close drawer and show message, but don't reload mails
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                drawerLayout.closeDrawers();
+                return true; // Return early to avoid reloading mails
             } else if (id == R.id.nav_help) {
                 selectedLabel = "inbox";
                 message = "Help information";
@@ -294,10 +327,12 @@ public class HomeActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
         
         if (headerView != null) {
-            // Update user avatar with first letter of username
+            // Update user avatar with first letter of username and generated color
             TextView drawerAvatar = headerView.findViewById(R.id.drawer_user_avatar);
             if (drawerAvatar != null && userName != null && !userName.isEmpty()) {
                 drawerAvatar.setText(userName.substring(0, 1).toUpperCase());
+                // Apply the same color generation logic as in MailAdapter and ViewMailActivity
+                drawerAvatar.setBackground(createCircleDrawable(getColorForUser(userName)));
             }
             
             // Update user email
@@ -306,6 +341,23 @@ public class HomeActivity extends AppCompatActivity {
                 drawerEmail.setText(userEmail);
             }
         }
+    }
+
+    // Same color generation logic as in MailAdapter and ViewMailActivity
+    private int getColorForUser(String userName) {
+        int[] colors = {
+                0xFFE57373, 0xFFF06292, 0xFFBA68C8, 0xFF64B5F6, 0xFF4DB6AC,
+                0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF81C784, 0xFFDCE775
+        };
+        int hash = userName != null ? Math.abs(userName.hashCode()) : 0;
+        return colors[hash % colors.length];
+    }
+
+    private Drawable createCircleDrawable(int color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.OVAL);
+        drawable.setColor(color);
+        return drawable;
     }
 
 }

@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.LoginActivity">
@@ -31,7 +32,7 @@
             android:layout_marginBottom="24dp"
             android:gravity="center"
             android:text="@string/loginTitle"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="28sp"
             android:textStyle="bold" />
 
@@ -43,8 +44,8 @@
             android:hint="@string/login_etUsername"
             android:padding="16dp"
             android:inputType="text"
-            android:textColor="#000000"
-            android:textColorHint="#D3D3D3"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant"
             android:textSize="18sp" />
 
         <EditText
@@ -55,8 +56,8 @@
             android:hint="@string/login_etPassword"
             android:inputType="textPassword"
             android:padding="16dp"
-            android:textColor="#000000"
-            android:textColorHint="#D3D3D3"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant"
             android:textSize="18sp" />
 
         <Button
@@ -66,7 +67,7 @@
             android:layout_marginBottom="16dp"
             android:padding="12dp"
             android:text="@string/login_btnLogin"
-            android:textColor="@color/white"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="18sp" />
 
         <Button

@@ -13,6 +13,9 @@ import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sunmail.R;
@@ -20,6 +23,7 @@ import com.example.sunmail.model.AuthResult;
 import com.example.sunmail.model.ComposeForm;
 import com.example.sunmail.model.Mail;
 import com.example.sunmail.util.ComposeUtils;
+import com.example.sunmail.util.ThemeManager;
 import com.example.sunmail.viewmodel.ComposeViewModel;
 
 // Activity for composing a new email
@@ -57,9 +61,21 @@ public class ComposeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Apply saved theme before setting content view
+        int savedThemeMode = ThemeManager.getThemeMode(this);
+        ThemeManager.applyTheme(savedThemeMode);
+        
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this); // Enables Edge-to-Edge mode for the UI
         setContentView(R.layout.activity_compose); // Sets the activity layout
+
+        // Handle system insets for Edge-to-Edge
+        View mainView = findViewById(R.id.main);
+        ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         // Initialize ViewModel (like RegisterActivity)
         viewModel = new ViewModelProvider(this).get(ComposeViewModel.class);

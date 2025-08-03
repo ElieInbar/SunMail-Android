@@ -9,7 +9,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="16dp"
     tools:context=".activities.ComposeActivity">
 
     <!--
@@ -115,7 +114,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#E0E0E0" />
+                android:background="?attr/colorOutline" />
 
             <!--
                 Input field for the email subject.
@@ -136,7 +135,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#E0E0E0" />
+                android:background="?attr/colorOutline" />
 
             <!--
                 Input field for the message body.

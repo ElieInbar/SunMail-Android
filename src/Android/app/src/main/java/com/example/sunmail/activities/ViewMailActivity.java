@@ -1,6 +1,7 @@
 package com.example.sunmail.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -8,7 +9,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.drawable.GradientDrawable;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sunmail.R;
 import com.example.sunmail.model.Mail;
+import com.example.sunmail.util.ThemeManager;
 import com.example.sunmail.viewmodel.MailViewModel;
 
 
@@ -26,7 +30,12 @@ public class ViewMailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Apply saved theme before setting content view
+        int savedThemeMode = ThemeManager.getThemeMode(this);
+        ThemeManager.applyTheme(savedThemeMode);
+
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this); // Enable Edge-to-Edge mode like ComposeActivity
         setContentView(R.layout.activity_view_mail);
 
         // Retrieve the Mail object passed via Intent
@@ -60,6 +69,7 @@ public class ViewMailActivity extends AppCompatActivity {
             body.setText(mail.getBody());
             senderMail.setText(sunmail);
             avatar.setText(senderName.isEmpty() ? "?" : senderName.substring(0, 1).toUpperCase());
+            avatar.setBackground(createCircleDrawable(getColorForUser(senderName)));
         }
 
         // Setup Reply and Forward buttons
@@ -188,5 +198,22 @@ public class ViewMailActivity extends AppCompatActivity {
 
         startActivity(intent);
         finish(); // Close ViewMailActivity
+    }
+
+    // Same color generation logic as in RegisterActivity and MailAdapter
+    private int getColorForUser(String userName) {
+        int[] colors = {
+                0xFFE57373, 0xFFF06292, 0xFFBA68C8, 0xFF64B5F6, 0xFF4DB6AC,
+                0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF81C784, 0xFFDCE775
+        };
+        int hash = userName != null ? Math.abs(userName.hashCode()) : 0;
+        return colors[hash % colors.length];
+    }
+
+    private Drawable createCircleDrawable(int color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.OVAL);
+        drawable.setColor(color);
+        return drawable;
     }
 }
