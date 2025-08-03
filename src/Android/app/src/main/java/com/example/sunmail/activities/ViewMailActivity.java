@@ -2,6 +2,7 @@ package com.example.sunmail.activities;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,23 +10,32 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.graphics.drawable.GradientDrawable;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sunmail.R;
+import com.example.sunmail.model.Label;
 import com.example.sunmail.model.Mail;
+import com.example.sunmail.util.AvatarColorHelper;
+import com.example.sunmail.util.FlowLayout;
 import com.example.sunmail.util.ThemeManager;
+import com.example.sunmail.viewmodel.LabelViewModel;
 import com.example.sunmail.viewmodel.MailViewModel;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public class ViewMailActivity extends AppCompatActivity {
     private Mail mail;
     private MailViewModel mailViewModel;
+    private LabelViewModel labelViewModel;
     private String senderName; // Store sender name for reply/forward
 
     @Override
@@ -40,6 +50,8 @@ public class ViewMailActivity extends AppCompatActivity {
 
         // Retrieve the Mail object passed via Intent
         mail = (Mail) getIntent().getSerializableExtra("mail");
+        mailViewModel = new ViewModelProvider(this).get(MailViewModel.class);
+        labelViewModel = new ViewModelProvider(this).get(LabelViewModel.class);
 
         // Initialize UI components
         TextView subject = findViewById(R.id.text_subject);
@@ -47,6 +59,7 @@ public class ViewMailActivity extends AppCompatActivity {
         TextView body = findViewById(R.id.text_body);
         TextView senderMail = findViewById(R.id.text_sender_email);
         TextView avatar = findViewById(R.id.text_avatar);
+        FlowLayout labelContainer = findViewById(R.id.label_container);
 
         // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.viewmail_toolbar);
@@ -75,11 +88,6 @@ public class ViewMailActivity extends AppCompatActivity {
         // Setup Reply and Forward buttons
         setupReplyForwardButtons();
 
-        // Retrieve the Mail object again (redundant, can be removed)
-        mail = (Mail) getIntent().getSerializableExtra("mail");
-        // Initialize the ViewModel
-        mailViewModel = new ViewModelProvider(this).get(MailViewModel.class);
-
         // Observe the result of mail deletion
         mailViewModel.getDeleteResult().observe(this, result -> {
             if ("success".equals(result)) {
@@ -89,18 +97,93 @@ public class ViewMailActivity extends AppCompatActivity {
                 Toast.makeText(this, "Error: " + result, Toast.LENGTH_LONG).show();
             }
         });
+
+        // Observe ajout / suppression de label
+        mailViewModel.getLabelAddStatus().observe(this, status -> {
+            if ("success".equals(status)) {
+                Toast.makeText(this, "Label added", Toast.LENGTH_SHORT).show();
+                mailViewModel.loadLabelsForMail(mail.getId());
+            } else if (status != null) {
+                Toast.makeText(this, "Error adding label: " + status, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mailViewModel.getLabelRemoveStatus().observe(this, status -> {
+            if ("success".equals(status)) {
+                Toast.makeText(this, "Label removed", Toast.LENGTH_SHORT).show();
+                mailViewModel.loadLabelsForMail(mail.getId());
+            } else if (status != null) {
+                Toast.makeText(this, "Error removing label: " + status, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mailViewModel.loadLabelsForMail(mail.getId());
+        mailViewModel.getMailLabels().observe(this, labels -> {
+            labelContainer.removeAllViews();
+            if (labels != null && !labels.isEmpty()) {
+                for (Label label : labels) {
+                    String name = label.getName().toLowerCase();
+                    if (name.equals("all") || name.equals("sent")) continue;
+
+                    TextView chip = new TextView(this);
+                    chip.setText(label.getName());
+                    chip.setTextSize(13);
+                    // Use theme-appropriate text color instead of hardcoded white
+                    chip.setTextColor(ContextCompat.getColor(this, R.color.white));
+                    chip.setBackgroundResource(R.drawable.label_chip_background);
+                    chip.setPadding(20, 10, 20, 10);
+                    chip.setClickable(true);
+
+                    chip.setOnClickListener(v -> {
+                        new AlertDialog.Builder(this)
+                                .setTitle("Remove the label ?")
+                                .setMessage("Remove the label \"" + label.getName() + "\" of this mail ?")
+                                .setPositiveButton("Yes", (d, w) -> {
+                                    mailViewModel.removeLabelFromMail(mail.getId(), label.getId());
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .show();
+                    });
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.setMarginEnd(16);
+                    chip.setLayoutParams(params);
+                    labelContainer.addView(chip);
+                }
+            } else {
+                TextView empty = new TextView(this);
+                empty.setText("No labels");
+                labelContainer.addView(empty);
+            }
+        });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_delete) {
-            // Show confirmation dialog before deleting mail
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_add_label) {
+            showAddLabelDialog();
+            return true;
+        }
+
+        if (itemId == R.id.action_toggle_star) {
+            mailViewModel.addSystemLabelFast(mail.getId(), "starred");
+            return true;
+        }
+
+        if (itemId == R.id.action_toggle_important) {
+            mailViewModel.addSystemLabelFast(mail.getId(), "important");
+            return true;
+        }
+
+        if (itemId == R.id.action_delete) {
             new AlertDialog.Builder(this)
                     .setTitle("Delete")
-                    .setMessage("Delete this mail?")
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        mailViewModel.deleteMail(mail.getId());
-                    })
+                    .setMessage("Delete this Mail")
+                    .setPositiveButton("Yes", (dialog, which) -> mailViewModel.deleteMail(mail.getId()))
                     .setNegativeButton("No", null)
                     .show();
             return true;
@@ -108,6 +191,7 @@ public class ViewMailActivity extends AppCompatActivity {
             handleEditDraft();
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -202,12 +286,7 @@ public class ViewMailActivity extends AppCompatActivity {
 
     // Same color generation logic as in RegisterActivity and MailAdapter
     private int getColorForUser(String userName) {
-        int[] colors = {
-                0xFFE57373, 0xFFF06292, 0xFFBA68C8, 0xFF64B5F6, 0xFF4DB6AC,
-                0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF81C784, 0xFFDCE775
-        };
-        int hash = userName != null ? Math.abs(userName.hashCode()) : 0;
-        return colors[hash % colors.length];
+        return AvatarColorHelper.getColorForUser(this, userName);
     }
 
     private Drawable createCircleDrawable(int color) {
@@ -215,5 +294,65 @@ public class ViewMailActivity extends AppCompatActivity {
         drawable.setShape(GradientDrawable.OVAL);
         drawable.setColor(color);
         return drawable;
+    }
+
+    private void showAddLabelDialog() {
+        mailViewModel.loadLabelsForMail(mail.getId());
+        labelViewModel.fetchLabels();
+
+        LiveData<List<Label>> allLabelsLive = labelViewModel.getLabels();
+        LiveData<List<Label>> mailLabelsLive = mailViewModel.getMailLabels();
+        MediatorLiveData<Boolean> mediator = new MediatorLiveData<>();
+
+        mediator.addSource(allLabelsLive, labels -> {
+            if (labels != null && mailLabelsLive.getValue() != null) mediator.setValue(true);
+        });
+
+        mediator.addSource(mailLabelsLive, labels -> {
+            if (labels != null && allLabelsLive.getValue() != null) mediator.setValue(true);
+        });
+
+        mediator.observe(this, ready -> {
+            tryShowDialog();
+            mediator.removeObservers(this);
+        });
+    }
+
+    private void tryShowDialog() {
+        List<Label> allLabels = labelViewModel.getLabels().getValue();
+        List<Label> assignedLabels = mailViewModel.getMailLabels().getValue();
+
+        if (allLabels == null || assignedLabels == null) return;
+
+        List<Label> filtered = new ArrayList<>();
+        for (Label label : allLabels) {
+            boolean alreadyAssigned = false;
+            for (Label assigned : assignedLabels) {
+                if (label.getId().equals(assigned.getId())) {
+                    alreadyAssigned = true;
+                    break;
+                }
+            }
+            if (!alreadyAssigned) filtered.add(label);
+        }
+
+        if (filtered.isEmpty()) {
+            Toast.makeText(this, "No Label to add", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] labelNames = new String[filtered.size()];
+        for (int i = 0; i < filtered.size(); i++) {
+            labelNames[i] = filtered.get(i).getName();
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Add a label")
+                .setItems(labelNames, (dialog, which) -> {
+                    String labelId = filtered.get(which).getId();
+                    mailViewModel.addLabelToMail(mail.getId(), labelId);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 }

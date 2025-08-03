@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Gmail-style button for reply/forward actions -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    
+
     <!-- Pressed state -->
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
@@ -10,7 +10,7 @@
             <corners android:radius="24dp" />
         </shape>
     </item>
-    
+
     <!-- Default state -->
     <item>
         <shape android:shape="rectangle">
@@ -19,5 +19,5 @@
             <corners android:radius="24dp" />
         </shape>
     </item>
-    
+
 </selector>

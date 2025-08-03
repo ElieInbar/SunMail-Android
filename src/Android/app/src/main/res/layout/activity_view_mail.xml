@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
+    android:orientation="vertical"
     android:fitsSystemWindows="true">
 
     <!-- Top bar styled like Gmail -->
@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
         android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:minHeight="?attr/actionBarSize" />
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
     <!-- Mail header -->
     <LinearLayout
@@ -28,55 +28,67 @@
             android:id="@+id/text_subject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="21sp"
-            android:textColor="?attr/colorOnSurface"
-            android:maxLines="2"
+            android:layout_marginBottom="16dp"
             android:ellipsize="end"
-            android:layout_marginBottom="16dp" />
+            android:maxLines="2"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="21sp"
+            android:textStyle="bold" />
 
         <!-- Sender row: avatar + sender + date -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <!-- Avatar circulaire -->
             <TextView
                 android:id="@+id/text_avatar"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
-                android:gravity="center"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:layout_marginEnd="12dp"
                 android:background="@drawable/avatar_background"
+                android:gravity="center"
                 android:textColor="@android:color/white"
-                android:layout_marginEnd="12dp" />
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <!-- Nom de l'expéditeur et email -->
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/text_sender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
                     android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/text_sender_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
+
+        <com.example.sunmail.util.FlowLayout
+            android:id="@+id/label_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="8dp"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp" />
+
     </LinearLayout>
 
     <!-- Corps du mail -->
@@ -91,9 +103,9 @@
             android:id="@+id/text_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="17sp"
+            android:lineSpacingExtra="4dp"
             android:textColor="?attr/colorOnSurface"
-            android:lineSpacingExtra="4dp" />
+            android:textSize="17sp" />
     </ScrollView>
 
     <!-- Action buttons Reply/Forward at the bottom -->
@@ -147,3 +159,4 @@
             android:theme="@android:style/Theme.Material.Light" />
     </LinearLayout>
 </LinearLayout>
+

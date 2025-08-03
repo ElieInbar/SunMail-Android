@@ -51,6 +51,22 @@ public class ThemeManager {
         }
     }
 
+    private static final String KEY_THEME_CHANGING = "theme_changing";
+
+    public static void setThemeChanging(Context context, boolean isChanging) {
+        SharedPreferences.Editor editor = getPreferences(context).edit();
+        editor.putBoolean(KEY_THEME_CHANGING, isChanging);
+        editor.apply();
+    }
+
+    public static boolean isThemeChanging(Context context) {
+        return getPreferences(context).getBoolean(KEY_THEME_CHANGING, false);
+    }
+
+    public static void clearThemeChanging(Context context) {
+        setThemeChanging(context, false);
+    }
+
     public static int getNextThemeMode(int currentMode) {
         // Toggle between Light and Dark only
         return (currentMode == THEME_LIGHT) ? THEME_DARK : THEME_LIGHT;

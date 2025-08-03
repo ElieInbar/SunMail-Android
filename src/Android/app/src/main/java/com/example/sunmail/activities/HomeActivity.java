@@ -4,10 +4,18 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +33,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.sunmail.R;
 import com.example.sunmail.adapter.MailAdapter;
+import com.example.sunmail.model.Label;
 import com.example.sunmail.model.Mail;
 import com.example.sunmail.repository.AuthRepository;
+import com.example.sunmail.util.AvatarColorHelper;
 import com.example.sunmail.util.ThemeManager;
 import com.example.sunmail.viewmodel.HomeViewModel;
+import com.example.sunmail.viewmodel.LabelViewModel;
 import com.example.sunmail.viewmodel.MailViewModel;
 import com.example.sunmail.viewmodel.UserViewModel;
 import com.example.sunmail.viewmodel.UserViewModelFactory;
@@ -38,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
 
 public class HomeActivity extends AppCompatActivity {
     // Declaration of main views
@@ -52,10 +62,14 @@ public class HomeActivity extends AppCompatActivity {
     private HomeViewModel homeViewModel;
     private SwipeRefreshLayout swipeRefreshLayout;
     private UserViewModel userViewModel;
+    private EditText searchEditText;
+    private Handler searchHandler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
     private String myUserId = null;
     private String username = null;
     private String label = "inbox";
-    private static boolean isThemeChanging = false;
+    private boolean isSearchMode = false;
+    private LabelViewModel labelViewModel;
 
 
     @Override
@@ -90,6 +104,13 @@ public class HomeActivity extends AppCompatActivity {
         AuthRepository repository = new AuthRepository(getApplication());
         UserViewModelFactory userFactory = new UserViewModelFactory(repository);
         userViewModel = new ViewModelProvider(this, userFactory).get(UserViewModel.class);
+        labelViewModel = new ViewModelProvider(this).get(LabelViewModel.class);
+        labelViewModel.fetchLabels();
+
+        labelViewModel.getLabels().observe(this, labels -> {
+            if (labels == null || labels.isEmpty()) return;
+            addCustomLabelsToDrawer(labels);
+        });
 
         // Observe user map and load mails when ready
         userViewModel.getUserMap().observe(this, userMap -> {
@@ -155,12 +176,12 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d("UserSessionInfo", info);
 
                 // Welcome back message for restored session (only if not changing theme)
-                if (!isThemeChanging) {
+                if (!ThemeManager.isThemeChanging(this)) {
                     Toast.makeText(this, "Welcome back, " + (username != null ? username : "User") + "!", Toast.LENGTH_SHORT).show();
                 }
                 
-                // Reset the flag after use
-                isThemeChanging = false;
+                // Clear the theme changing flag after use
+                ThemeManager.clearThemeChanging(this);
             }
         });
     }
@@ -171,12 +192,102 @@ public class HomeActivity extends AppCompatActivity {
         mailViewModel.loadMails(label); // Reload mails when activity resumes
     }
 
+    private void addCustomLabelsToDrawer(List<Label> labels) {
+        Menu menu = navigationView.getMenu();
+        int groupId = R.id.nav_group_custom_labels;
+        menu.removeGroup(groupId);
+
+        for (Label label : labels) {
+            String name = label.getName().toLowerCase();
+            if (name.equals("inbox") || name.equals("spam")) continue;
+
+            MenuItem item = menu.add(groupId, Menu.NONE, Menu.NONE, " "); // un espace
+
+
+            // Crée une vue customisée
+            View itemView = getLayoutInflater().inflate(R.layout.item_drawer_label, navigationView, false);
+            itemView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                Log.d("LayoutDebug", "itemView width: " + itemView.getWidth());
+            });
+
+
+            TextView labelName = itemView.findViewById(R.id.label_name);
+            ImageView optionsButton = itemView.findViewById(R.id.label_options);
+
+            labelName.setText(label.getName());
+
+            labelName.setOnClickListener(v -> {
+                this.label = label.getName();
+                mailAdapter.setCurrentLabel(label.getName());
+                mailViewModel.loadMails(label.getName());
+                drawerLayout.closeDrawers();
+            });
+
+            optionsButton.setOnClickListener(v -> showLabelOptionsPopup(v, label));
+
+            item.setActionView(itemView);
+        }
+    }
+    private void showLabelOptionsPopup(View anchor, Label label) {
+        PopupMenu popup = new PopupMenu(this, anchor);
+        popup.getMenu().add("Edit");
+        popup.getMenu().add("Delete");
+
+        popup.setOnMenuItemClickListener(item -> {
+            String title = item.getTitle().toString();
+            if (title.equals("Edit")) {
+                showLabelOptionsDialog(label);
+            } else if (title.equals("Delete")) {
+                confirmDeleteLabel(label);
+            }
+            return true;
+        });
+
+        popup.show();
+    }
+    private void confirmDeleteLabel(Label label) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete label")
+                .setMessage("Do you want to delete this label \"" + label.getName() + "\" ?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    labelViewModel.deleteLabel(label.getId());
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+
+    private void showLabelOptionsDialog(Label label) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit the label");
+
+        final View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_label, null);
+        EditText input = dialogView.findViewById(R.id.label_name_input);
+        input.setText(label.getName()); // pré-remplit avec l’ancien nom
+
+        builder.setView(dialogView);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String newName = input.getText().toString().trim();
+            if (!newName.isEmpty() && !newName.equals(label.getName())) {
+                labelViewModel.updateLabel(label.getId(), newName);
+            } else {
+                Toast.makeText(this, "Name not changed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Delete", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
 
     // Method to bind layout views to variables
     private void initViews() {
         drawerLayout = findViewById(R.id.drawer_layout);      // Navigation drawer
         menuButton = findViewById(R.id.menu_button);          // Button to open the drawer
         navigationView = findViewById(R.id.navigation_view);  // Navigation view (menu)
+        searchEditText = findViewById(R.id.search_edittext);  // Search bar
+        setupSearchFunctionality(); // Setup search functionality
     }
 
     // Method to configure the navigation drawer and its actions
@@ -222,8 +333,8 @@ public class HomeActivity extends AppCompatActivity {
                 int currentThemeMode = ThemeManager.getThemeMode(this);
                 int nextThemeMode = ThemeManager.getNextThemeMode(currentThemeMode);
                 
-                // Set flag to indicate theme change
-                isThemeChanging = true;
+                // Set flag to indicate theme change BEFORE applying theme
+                ThemeManager.setThemeChanging(this, true);
                 
                 ThemeManager.saveThemeMode(this, nextThemeMode);
                 ThemeManager.applyTheme(nextThemeMode);
@@ -234,26 +345,55 @@ public class HomeActivity extends AppCompatActivity {
                 // Close drawer and show message, but don't reload mails
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
+                
+                // The activity will be recreated, so we don't need to do anything else
                 return true; // Return early to avoid reloading mails
             } else if (id == R.id.nav_help) {
                 selectedLabel = "inbox";
                 message = "Help information";
+            } else if (id == R.id.nav_create_label) {
+                message = "Create a label";
+                showCreateLabelDialog();
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
             } else {
                 message = "Other option selected";
             }
 
-            label = selectedLabel;
+            if (selectedLabel != null && !selectedLabel.equals(label)) {
+                label = selectedLabel;
+                mailAdapter.setCurrentLabel(label);
+                mailViewModel.loadMails(label);
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            }
 
-            mailAdapter.setCurrentLabel(label);
-            mailViewModel.loadMails(label);
-
-            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-            drawerLayout.closeDrawers(); // Closes the drawer after selection
+            drawerLayout.closeDrawers();
             return true;
         });
-
-
     }
+
+    private void showCreateLabelDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Create a new label");
+
+        final View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_label, null);
+        builder.setView(dialogView);
+
+        builder.setPositiveButton("Create", (dialog, which) -> {
+            EditText labelInput = dialogView.findViewById(R.id.label_name_input);
+            String labelName = labelInput.getText().toString().trim();
+
+            if (!labelName.isEmpty()) {
+                labelViewModel.createLabel(labelName);
+            } else {
+                Toast.makeText(this, "Label's name cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
 
     // Handles the back button behavior
     @Override
@@ -345,12 +485,7 @@ public class HomeActivity extends AppCompatActivity {
 
     // Same color generation logic as in MailAdapter and ViewMailActivity
     private int getColorForUser(String userName) {
-        int[] colors = {
-                0xFFE57373, 0xFFF06292, 0xFFBA68C8, 0xFF64B5F6, 0xFF4DB6AC,
-                0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF81C784, 0xFFDCE775
-        };
-        int hash = userName != null ? Math.abs(userName.hashCode()) : 0;
-        return colors[hash % colors.length];
+        return AvatarColorHelper.getColorForUser(this, userName);
     }
 
     private Drawable createCircleDrawable(int color) {
@@ -358,6 +493,45 @@ public class HomeActivity extends AppCompatActivity {
         drawable.setShape(GradientDrawable.OVAL);
         drawable.setColor(color);
         return drawable;
+    }
+
+    // Setup search functionality
+    private void setupSearchFunctionality() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Not needed
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Cancel previous search if any
+                if (searchRunnable != null) {
+                    searchHandler.removeCallbacks(searchRunnable);
+                }
+                
+                String query = s.toString().trim();
+                if (query.isEmpty()) {
+                    // If search is empty, return to normal mode immediately
+                    if (isSearchMode) {
+                        isSearchMode = false;
+                        mailViewModel.loadMails(label); // Reload normal mails
+                    }
+                } else {
+                    // Perform search with 300ms delay to avoid too many API calls
+                    searchRunnable = () -> {
+                        isSearchMode = true;
+                        mailViewModel.searchMails(query);
+                    };
+                    searchHandler.postDelayed(searchRunnable, 300);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Not needed
+            }
+        });
     }
 
 }

@@ -21,6 +21,11 @@
             android:scaleType="centerInside"
             android:padding="8dp" />
 
+        <!--
+            This TextView displays the first letter of the username representing the user profile.
+            The letter is shown in a colored circle as a simple avatar.
+            Positioned fully to the right of the layout.
+        -->
         <TextView
             android:id="@+id/drawer_user_avatar"
             android:layout_width="50dp"
@@ -36,6 +41,11 @@
 
     </RelativeLayout>
 
+    <!--
+        This TextView displays the user's email address dynamically.
+        The text is smaller and slightly transparent (alpha 0.8) to indicate secondary information.
+        It is placed below the app or user name.
+    -->
     <TextView
         android:id="@+id/drawer_user_email"
         android:layout_width="wrap_content"

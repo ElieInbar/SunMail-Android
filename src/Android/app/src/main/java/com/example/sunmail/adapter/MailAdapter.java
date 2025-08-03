@@ -17,6 +17,7 @@ import com.example.sunmail.viewmodel.MailViewModel;
 import com.example.sunmail.R;
 import com.example.sunmail.activities.ViewMailActivity;
 import com.example.sunmail.model.Mail;
+import com.example.sunmail.util.AvatarColorHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder> {
     private MailViewModel mailViewModel;
     private String currentLabel;
+    private Context context;
 
     private List<Mail> mailList;
     private Map<String, String> userMap = new HashMap<>();
@@ -42,7 +44,8 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
 
     @Override
     public MailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        this.context = parent.getContext(); // Store context for later use
+        View view = LayoutInflater.from(context)
                 .inflate(R.layout.mail_item, parent, false);
         return new MailViewHolder(view);
     }
@@ -154,12 +157,7 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
 
     // Same color generation logic as in RegisterActivity
     private int getColorForUser(String userName) {
-        int[] colors = {
-                0xFFE57373, 0xFFF06292, 0xFFBA68C8, 0xFF64B5F6, 0xFF4DB6AC,
-                0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF81C784, 0xFFDCE775
-        };
-        int hash = userName != null ? Math.abs(userName.hashCode()) : 0;
-        return colors[hash % colors.length];
+        return AvatarColorHelper.getColorForUser(context, userName);
     }
 
     private Drawable createCircleDrawable(int color) {

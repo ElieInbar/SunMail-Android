@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Avatar colors - compatible with both light and dark themes -->
+    <color name="avatar_color_1">#FFE57373</color>  <!-- Light Red -->
+    <color name="avatar_color_2">#FFF06292</color>  <!-- Pink -->
+    <color name="avatar_color_3">#FFBA68C8</color>  <!-- Purple -->
+    <color name="avatar_color_4">#FF64B5F6</color>  <!-- Blue -->
+    <color name="avatar_color_5">#FF4DB6AC</color>  <!-- Teal -->
+    <color name="avatar_color_6">#FFFFB74D</color>  <!-- Orange -->
+    <color name="avatar_color_7">#FFA1887F</color>  <!-- Brown -->
+    <color name="avatar_color_8">#FF90A4AE</color>  <!-- Blue Grey -->
+    <color name="avatar_color_9">#FF81C784</color>  <!-- Green -->
+    <color name="avatar_color_10">#FFDCE775</color> <!-- Lime -->
 </resources>

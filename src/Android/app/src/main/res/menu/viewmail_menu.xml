@@ -1,5 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/action_edit_draft"
         android:icon="@drawable/ic_edit_draft"
@@ -11,4 +12,22 @@
         android:icon="@drawable/ic_trash"
         android:title="Delete"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_add_label"
+        android:title="Add Label"
+        android:icon="@drawable/ic_add"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_toggle_star"
+        android:title="Star"
+        android:icon="@drawable/ic_starred"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_toggle_important"
+        android:title="Important"
+        android:icon="@drawable/ic_important"
+        app:showAsAction="ifRoom" />
 </menu>
