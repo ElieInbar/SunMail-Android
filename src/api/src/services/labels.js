@@ -11,6 +11,10 @@ function IdGenerator() {
 }
 
 const createLabel = async (name, userId) => {
+    const existingLabel = await Label.findOne({ name, userId });
+    if (existingLabel) {
+        return -1;
+    }
     const label = new Label({ id: IdGenerator(), name, userId });
     return await label.save();
 }
@@ -30,6 +34,9 @@ const patchLabelById = async (id, name, userId) => {
     const label = await getLabelById(id, userId);
     if (!label) return null;
 
+    if(await getLabelByName(name, userId)){
+        return -1;
+    }
     label.name = name;
     await label.save();
     return label;
@@ -61,8 +68,8 @@ const getLabelMails = async (labelId, userId) => {
             $or: [{ from: userId }, { to: userId }],
             labels: label._id
         })
-        .populate('labels')
-        .sort({ date: -1 });
+            .populate('labels')
+            .sort({ date: -1 });
 
         return mails;
     } catch (error) {

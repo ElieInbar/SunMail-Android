@@ -14,7 +14,11 @@ exports.createLabel = async (req, res) => {
     const { name } = req.body
     if (!name) return res.status(400).json({ error: 'Name is required' })
 
-    return res.status(201).json(await labelService.createLabel(name, userId)).end()
+    const label = await labelService.createLabel(name, userId);
+    if (label == -1) {
+        return res.status(400).json({ error: 'Label already exists' });
+    }
+    return res.status(201).json(label).end()
 }
 
 exports.getLabelById = async (req, res) => {
@@ -40,6 +44,8 @@ exports.patchLabelById = async (req, res) => {
     const check = await labelService.patchLabelById(id, name, userId);
     if (!check) {
         return res.status(400).json({ error: 'Label not found' })
+    } else if (check == -1) {
+        return res.status(400).json({ error: 'Label already exists' })
     }
     res.status(204).json(check).end();
 }
