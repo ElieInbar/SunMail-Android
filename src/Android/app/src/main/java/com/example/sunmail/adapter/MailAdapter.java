@@ -3,6 +3,8 @@ package com.example.sunmail.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +61,10 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
         holder.sender.setText(senderName);
         holder.avatar.setText(senderName.isEmpty() ? "?" : senderName.substring(0, 1).toUpperCase());
 
+        // Apply the same color logic as in RegisterActivity
+        int avatarColor = getColorForUser(senderName);
+        holder.avatar.setBackground(createCircleDrawable(avatarColor));
+
 
         holder.subject.setText(mail.getSubject());
         holder.snippet.setText(mail.getSnippet());
@@ -72,11 +78,11 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
 
         // Apparence "unread"
         if (!mail.isRead()) {
-            holder.itemView.setBackgroundColor(0xFFE3F2FD); // bleu clair
+            // For unread mails, keep the CardView background but make text bold
             holder.subject.setTypeface(null, Typeface.BOLD);
             holder.sender.setTypeface(null, Typeface.BOLD);
         } else {
-            holder.itemView.setBackgroundColor(0xFFFFFFFF); // blanc
+            // For read mails, keep the CardView background and normal text
             holder.subject.setTypeface(null, Typeface.NORMAL);
             holder.sender.setTypeface(null, Typeface.NORMAL);
         }
@@ -144,5 +150,22 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
             this.userMap = userMap;
             notifyDataSetChanged();
         }
+    }
+
+    // Same color generation logic as in RegisterActivity
+    private int getColorForUser(String userName) {
+        int[] colors = {
+                0xFFE57373, 0xFFF06292, 0xFFBA68C8, 0xFF64B5F6, 0xFF4DB6AC,
+                0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF81C784, 0xFFDCE775
+        };
+        int hash = userName != null ? Math.abs(userName.hashCode()) : 0;
+        return colors[hash % colors.length];
+    }
+
+    private Drawable createCircleDrawable(int color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.OVAL);
+        drawable.setColor(color);
+        return drawable;
     }
 }
