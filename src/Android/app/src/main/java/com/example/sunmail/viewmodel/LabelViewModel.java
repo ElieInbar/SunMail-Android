@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.sunmail.R;
 import com.example.sunmail.model.Label;
 import com.example.sunmail.repository.LabelRepository;
 
@@ -84,13 +85,13 @@ public class LabelViewModel extends AndroidViewModel {
                 if (response.isSuccessful()) {
                     fetchLabels();
                 }else{
-                    Toast.makeText(getApplication(), "Error while editing label", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), getApplication().getString(R.string.error_while_editing_label), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getApplication(), "Network failure : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplication(), getApplication().getString(R.string.network_failure, t.getMessage()), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -102,13 +103,13 @@ public class LabelViewModel extends AndroidViewModel {
                 if (response.isSuccessful()) {
                     fetchLabels();
                 } else {
-                    Toast.makeText(getApplication(), "Error while deleting label", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), getApplication().getString(R.string.error_while_deleting_label), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getApplication(), "Network Error : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplication(), getApplication().getString(R.string.network_error, t.getMessage()), Toast.LENGTH_SHORT).show();
             }
         });
     }

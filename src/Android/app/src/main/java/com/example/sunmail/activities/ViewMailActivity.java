@@ -93,28 +93,28 @@ public class ViewMailActivity extends AppCompatActivity {
         // Observe the result of mail deletion
         mailViewModel.getDeleteResult().observe(this, result -> {
             if ("success".equals(result)) {
-                Toast.makeText(this, "Mail deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.mail_deleted), Toast.LENGTH_SHORT).show();
                 finish(); // Return to the mail list
             } else if (result != null && !result.equals("")) {
-                Toast.makeText(this, "Error: " + result, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.error_colon, result), Toast.LENGTH_LONG).show();
             }
         });
 
         mailViewModel.getLabelAddStatus().observe(this, status -> {
             if ("success".equals(status)) {
-                Toast.makeText(this, "Label added", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.label_added), Toast.LENGTH_SHORT).show();
                 mailViewModel.loadLabelsForMail(mail.getId());
             } else if (status != null) {
-                Toast.makeText(this, "Error adding label: " + status, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.error_adding_label, status), Toast.LENGTH_SHORT).show();
             }
         });
 
         mailViewModel.getLabelRemoveStatus().observe(this, status -> {
             if ("success".equals(status)) {
-                Toast.makeText(this, "Label removed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.label_removed), Toast.LENGTH_SHORT).show();
                 mailViewModel.loadLabelsForMail(mail.getId());
             } else if (status != null) {
-                Toast.makeText(this, "Error removing label: " + status, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.error_removing_label, status), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -137,12 +137,12 @@ public class ViewMailActivity extends AppCompatActivity {
 
                     chip.setOnClickListener(v -> {
                         new AlertDialog.Builder(this)
-                                .setTitle("Remove the label ?")
-                                .setMessage("Remove the label \"" + label.getName() + "\" of this mail ?")
-                                .setPositiveButton("Yes", (d, w) -> {
+                                .setTitle(getString(R.string.remove_label_question))
+                                .setMessage(getString(R.string.remove_label_message, label.getName()))
+                                .setPositiveButton(getString(R.string.yes), (d, w) -> {
                                     mailViewModel.removeLabelFromMail(mail.getId(), label.getId());
                                 })
-                                .setNegativeButton("Cancel", null)
+                                .setNegativeButton(getString(R.string.cancel), null)
                                 .show();
                     });
 
@@ -155,7 +155,7 @@ public class ViewMailActivity extends AppCompatActivity {
                 }
             } else {
                 TextView empty = new TextView(this);
-                empty.setText("No labels");
+                empty.setText(getString(R.string.no_labels));
                 labelContainer.addView(empty);
             }
         });
@@ -182,10 +182,10 @@ public class ViewMailActivity extends AppCompatActivity {
 
         if (itemId == R.id.action_delete) {
             new AlertDialog.Builder(this)
-                    .setTitle("Delete")
-                    .setMessage("Delete this Mail")
-                    .setPositiveButton("Yes", (dialog, which) -> mailViewModel.deleteMail(mail.getId()))
-                    .setNegativeButton("No", null)
+                    .setTitle(getString(R.string.delete))
+                    .setMessage(getString(R.string.delete_this_mail))
+                    .setPositiveButton(getString(R.string.yes), (dialog, which) -> mailViewModel.deleteMail(mail.getId()))
+                    .setNegativeButton(getString(R.string.no), null)
                     .show();
             return true;
         } else if (item.getItemId() == R.id.action_edit_draft) {
@@ -232,7 +232,7 @@ public class ViewMailActivity extends AppCompatActivity {
      */
     private void handleReply() {
         if (mail == null) {
-            Toast.makeText(this, "Error: No mail to reply to", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error_no_mail_to_reply), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -248,7 +248,7 @@ public class ViewMailActivity extends AppCompatActivity {
      */
     private void handleForward() {
         if (mail == null) {
-            Toast.makeText(this, "Error: No mail to forward", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error_no_mail_to_forward), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -338,7 +338,7 @@ public class ViewMailActivity extends AppCompatActivity {
         }
 
         if (filtered.isEmpty()) {
-            Toast.makeText(this, "No Label to add", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_label_to_add), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -348,12 +348,12 @@ public class ViewMailActivity extends AppCompatActivity {
         }
 
         new AlertDialog.Builder(this)
-                .setTitle("Add a label")
+                .setTitle(getString(R.string.add_a_label))
                 .setItems(labelNames, (dialog, which) -> {
                     String labelId = filtered.get(which).getId();
                     mailViewModel.addLabelToMail(mail.getId(), labelId);
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 }

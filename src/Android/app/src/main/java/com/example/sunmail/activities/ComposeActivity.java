@@ -114,7 +114,7 @@ public class ComposeActivity extends AppCompatActivity {
             String body = bodyField.getText().toString().trim();
 
             if (to.isEmpty() || subject.isEmpty() || body.isEmpty()) {
-                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.all_fields_required), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -206,7 +206,7 @@ public class ComposeActivity extends AppCompatActivity {
             setLoadingState(false);
 
             if (result instanceof AuthResult.Success) {
-                Toast.makeText(this, "Email sent successfully!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.email_sent_successfully), Toast.LENGTH_SHORT).show();
                 finish(); // Return to previous activity
             } else if (result instanceof AuthResult.Error) {
                 String errorMessage = ((AuthResult.Error) result).getMessage();

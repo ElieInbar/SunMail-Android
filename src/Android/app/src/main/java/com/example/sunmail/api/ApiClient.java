@@ -16,7 +16,9 @@ public class ApiClient {
     //mac
 //    private static final String BASE_URL = "http://192.168.1.230:8080/api/";
     // For Android emulator, use 10.0.2.2 to access host machine
-    private static final String BASE_URL = "http://10.0.2.2:8080/api/";
+    // private static final String BASE_URL = "http://10.0.2.2:8080/api/";
+    // For physical device, use your Mac's IP address
+    private static final String BASE_URL = "http://192.168.1.228:8080/api/";
     private static Retrofit retrofit;
 
     public static Retrofit get(Context context) {
