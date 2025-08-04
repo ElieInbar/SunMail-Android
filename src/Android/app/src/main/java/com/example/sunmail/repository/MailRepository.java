@@ -3,7 +3,6 @@ package com.example.sunmail.repository;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.sunmail.api.ApiClient;
@@ -35,13 +34,13 @@ public class MailRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     mailsLiveData.postValue(response.body());
                 } else {
-                    Log.e("MailRepository", "Erreur de réponse : " + response.code());
+                    Log.e("MailRepository", "Response error: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Mail>> call, Throwable t) {
-                Log.e("MailRepository", "Erreur réseau", t);
+                Log.e("MailRepository", "Network error", t);
             }
         });
     }
@@ -53,13 +52,13 @@ public class MailRepository {
                 if (response.isSuccessful()) {
                     callback.onSuccess(null);
                 } else {
-                    callback.onError("Suppression échouée (" + response.code() + ")");
+                    callback.onError("Delete fail (" + response.code() + ")");
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                callback.onError("Erreur réseau : " + t.getMessage());
+                callback.onError("Network Error: " + t.getMessage());
             }
         });
     }
@@ -68,11 +67,11 @@ public class MailRepository {
         mailApi.markMailAsRead(mailId, label, new ToBody(mail.getReceiver())).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.d("PATCH", "Réponse PATCH: code=" + response.code());
+                Log.d("PATCH", "Response PATCH: code=" + response.code());
                 if (response.isSuccessful()) {
                     callback.onSuccess(null);
                 } else {
-                    callback.onError("Erreur code: " + response.code());
+                    callback.onError("Code error: " + response.code());
                 }
             }
             @Override
@@ -89,13 +88,13 @@ public class MailRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     labelsLiveData.postValue(response.body());
                 } else {
-                    Log.e("MailRepository", "Erreur de récupération des labels. Code = " + response.code());
+                    Log.e("MailRepository", "Error while getting labels. Code = " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Label>> call, Throwable t) {
-                Log.e("MailRepository", "Erreur réseau (labels)", t);
+                Log.e("MailRepository", "Network error (labels)", t);
             }
         });
     }
@@ -109,13 +108,13 @@ public class MailRepository {
                 if (response.isSuccessful()) {
                     callback.onSuccess(null);
                 } else {
-                    callback.onError("Erreur: " + response.code());
+                    callback.onError("Error: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                callback.onError("Erreur réseau: " + t.getMessage());
+                callback.onError("Network error: " + t.getMessage());
             }
         });
     }

@@ -42,7 +42,6 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- Avatar circulaire -->
             <TextView
                 android:id="@+id/text_avatar"
                 android:layout_width="42dp"
@@ -54,7 +53,6 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Nom de l'expéditeur et email -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -91,7 +89,6 @@
 
     </LinearLayout>
 
-    <!-- Corps du mail -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -108,7 +105,6 @@
             android:textSize="17sp" />
     </ScrollView>
 
-    <!-- Action buttons Reply/Forward at the bottom -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -128,7 +124,7 @@
             android:drawableStart="@drawable/ic_reply"
             android:drawablePadding="8dp"
             android:gravity="center"
-            android:text="Reply"
+            android:text="@string/reply"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="14sp"
             android:textStyle="normal"
@@ -148,7 +144,7 @@
             android:drawableStart="@drawable/ic_forward"
             android:drawablePadding="8dp"
             android:gravity="center"
-            android:text="Forward"
+            android:text="@string/forward"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="14sp"
             android:textStyle="normal"

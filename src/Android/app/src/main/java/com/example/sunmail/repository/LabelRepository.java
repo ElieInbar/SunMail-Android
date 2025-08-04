@@ -34,7 +34,7 @@ public class LabelRepository {
             public void onResponse(Call<List<Label>> call, Response<List<Label>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     for (Label label : response.body()) {
-                        Log.d("LabelRepository", "Label reçu: " + label.getName() + ", userId=" + label.getUserId());
+                        Log.d("LabelRepository", "Label received: " + label.getName() + ", userId=" + label.getUserId());
                     }
                     callback.onResponse(call, response);
                 } else {

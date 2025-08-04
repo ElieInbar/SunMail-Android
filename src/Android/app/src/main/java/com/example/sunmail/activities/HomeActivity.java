@@ -204,7 +204,6 @@ public class HomeActivity extends AppCompatActivity {
             MenuItem item = menu.add(groupId, Menu.NONE, Menu.NONE, " "); // un espace
 
 
-            // Crée une vue customisée
             View itemView = getLayoutInflater().inflate(R.layout.item_drawer_label, navigationView, false);
             itemView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                 Log.d("LayoutDebug", "itemView width: " + itemView.getWidth());
@@ -263,7 +262,7 @@ public class HomeActivity extends AppCompatActivity {
 
         final View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_label, null);
         EditText input = dialogView.findViewById(R.id.label_name_input);
-        input.setText(label.getName()); // pré-remplit avec l’ancien nom
+        input.setText(label.getName());
 
         builder.setView(dialogView);
 

@@ -83,12 +83,11 @@ public class MailViewModel extends AndroidViewModel {
         mailRepository.markMailAsRead(mailId, label, mail, new SimpleCallback<Void>() {
             @Override
             public void onSuccess(Void data) {
-                loadMails(label); // à activer si tu veux refresh direct
+                loadMails(label);
             }
 
             @Override
             public void onError(String errorMsg) {
-                // Optionnel: Log, Toast
             }
         });
     }
@@ -159,7 +158,7 @@ public class MailViewModel extends AndroidViewModel {
 
                         @Override
                         public void onError(String errorMsg) {
-                            labelAddStatus.postValue("Erreur ajout label: " + errorMsg);
+                            labelAddStatus.postValue("Erreur while adding label: " + errorMsg);
                         }
                     });
                 } else {
@@ -169,7 +168,7 @@ public class MailViewModel extends AndroidViewModel {
 
             @Override
             public void onFailure(Call<Label> call, Throwable t) {
-                labelAddStatus.postValue("Erreur réseau: " + t.getMessage());
+                labelAddStatus.postValue("Network error: " + t.getMessage());
             }
         });
     }

@@ -4,18 +4,16 @@
     android:layout_height="wrap_content"
     android:padding="12dp">
 
-    <!-- Label aligné à gauche -->
     <TextView
         android:id="@+id/label_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:text="Label"
+        android:text="@string/label"
         android:textColor="?attr/colorOnSurface"
         android:textSize="16sp" />
 
-    <!-- 3 petits points alignés à droite -->
     <ImageView
         android:id="@+id/label_options"
         android:layout_width="wrap_content"
@@ -24,5 +22,5 @@
         android:layout_centerVertical="true"
         android:padding="8dp"
         android:src="@drawable/ic_more_vert"
-        android:contentDescription="Options" />
+        android:contentDescription="@string/options" />
 </RelativeLayout>

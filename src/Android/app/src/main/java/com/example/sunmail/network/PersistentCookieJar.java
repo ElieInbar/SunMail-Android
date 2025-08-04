@@ -44,7 +44,6 @@ public class PersistentCookieJar implements CookieJar {
         return cookies;
     }
 
-    // Ajoute une méthode pour effacer les cookies lors du logout
     public void clearCookies() {
         sharedPreferences.edit().remove(COOKIE_KEY).apply();
     }
