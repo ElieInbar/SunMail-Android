@@ -70,6 +70,7 @@ public class HomeActivity extends AppCompatActivity {
     private String label = "inbox";
     private boolean isSearchMode = false;
     private LabelViewModel labelViewModel;
+    private boolean isFirstLoad = true; // Track if this is the first load or a configuration change
 
 
     @Override
@@ -77,6 +78,11 @@ public class HomeActivity extends AppCompatActivity {
         // Apply saved theme before setting content view
         int savedThemeMode = ThemeManager.getThemeMode(this);
         ThemeManager.applyTheme(savedThemeMode);
+        
+        // If savedInstanceState is not null, this is a configuration change (rotation, etc.)
+        if (savedInstanceState != null) {
+            isFirstLoad = false;
+        }
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
@@ -175,7 +181,6 @@ public class HomeActivity extends AppCompatActivity {
                         ", token=" + session.token;
                 Log.d("UserSessionInfo", info);
 
-<<<<<<< Updated upstream
                 // Welcome back message for restored session (only if not changing theme)
                 // Welcome back message only for first load (real login), not for configuration changes
                 if (isFirstLoad && !ThemeManager.isThemeChanging(this)) {
@@ -196,6 +201,13 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mailViewModel.loadMails(label); // Reload mails when activity resumes
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save the current state to detect configuration changes
+        outState.putBoolean("isFirstLoad", false);
     }
 
     private void addCustomLabelsToDrawer(List<Label> labels) {
@@ -308,34 +320,25 @@ public class HomeActivity extends AppCompatActivity {
         // Handles selection of navigation menu items
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            String message = "";
             String selectedLabel = label; // By default keep the current label
 
             // Handle navigation menu selections
             if (id == R.id.nav_inbox) {
                 selectedLabel = "inbox";
-                message = "Inbox selected";
             } else if (id == R.id.nav_starred) {
                 selectedLabel = "starred";
-                message = "Starred selected";
             } else if (id == R.id.nav_important) {
                 selectedLabel = "important";
-                message = "Important selected";
             } else if (id == R.id.nav_sent) {
                 selectedLabel = "sent";
-                message = "Sent selected";
             } else if (id == R.id.nav_drafts) {
                 selectedLabel = "drafts";
-                message = "Drafts selected";
             } else if (id == R.id.nav_all_mail) {
                 selectedLabel = "all";
-                message = "All Mail selected";
             } else if (id == R.id.nav_spam) {
                 selectedLabel = "spam";
-                message = "Spam selected";
             } else if (id == R.id.nav_trash) {
                 selectedLabel = "trash";
-                message = "Trash selected";
             } else if (id == R.id.nav_theme) {
                 // Toggle theme
                 int currentThemeMode = ThemeManager.getThemeMode(this);
@@ -348,31 +351,24 @@ public class HomeActivity extends AppCompatActivity {
                 ThemeManager.applyTheme(nextThemeMode);
                 
                 selectedLabel = label; // Keep current label
-                message = "Theme changed to " + ThemeManager.getThemeName(nextThemeMode);
                 
-                // Close drawer and show message, but don't reload mails
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                // Close drawer
                 drawerLayout.closeDrawers();
                 
                 // The activity will be recreated, so we don't need to do anything else
                 return true; // Return early to avoid reloading mails
             } else if (id == R.id.nav_help) {
                 selectedLabel = "inbox";
-                message = "Help information";
             } else if (id == R.id.nav_create_label) {
-                message = "Create a label";
                 showCreateLabelDialog();
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
-            } else {
-                message = "Other option selected";
             }
 
             if (selectedLabel != null && !selectedLabel.equals(label)) {
                 label = selectedLabel;
                 mailAdapter.setCurrentLabel(label);
                 mailViewModel.loadMails(label);
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             }
 
             drawerLayout.closeDrawers();
