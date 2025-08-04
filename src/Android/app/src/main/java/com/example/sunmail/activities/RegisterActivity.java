@@ -110,17 +110,17 @@ public class RegisterActivity extends AppCompatActivity {
 
             if (firstName.isEmpty() || userName.isEmpty() || birthDate.isEmpty() ||
                     gender.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.all_fields_required), Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (gender.equals("Select Gender")) {
-                Toast.makeText(this, "Please select a gender", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.please_select_gender), Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!password.equals(confirmPassword)) {
-                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.passwords_do_not_match), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -135,7 +135,7 @@ public class RegisterActivity extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
             registerBtn.setEnabled(true);
             if (authResult instanceof AuthResult.Success) {
-                Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, getString(R.string.registration_successful), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
@@ -210,7 +210,7 @@ public class RegisterActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openImagePicker();
             } else {
-                Toast.makeText(this, "Permission denied to read your images", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.permission_denied_images), Toast.LENGTH_SHORT).show();
             }
         }
     }

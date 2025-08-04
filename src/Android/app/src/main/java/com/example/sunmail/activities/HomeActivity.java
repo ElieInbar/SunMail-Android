@@ -181,9 +181,13 @@ public class HomeActivity extends AppCompatActivity {
                         ", token=" + session.token;
                 Log.d("UserSessionInfo", info);
 
+                // Welcome back message for restored session (only if not changing theme)
                 // Welcome back message only for first load (real login), not for configuration changes
                 if (isFirstLoad && !ThemeManager.isThemeChanging(this)) {
-                    Toast.makeText(this, "Welcome back, " + (username != null ? username : "User") + "!", Toast.LENGTH_SHORT).show();
+                    String welcomeMessage = username != null ? 
+                        getString(R.string.welcome_back, username) : 
+                        getString(R.string.welcome_back_user);
+                    Toast.makeText(this, welcomeMessage, Toast.LENGTH_SHORT).show();
                     isFirstLoad = false; // Ensure it only shows once
                 }
                 
@@ -243,14 +247,17 @@ public class HomeActivity extends AppCompatActivity {
     }
     private void showLabelOptionsPopup(View anchor, Label label) {
         PopupMenu popup = new PopupMenu(this, anchor);
-        popup.getMenu().add("Edit");
-        popup.getMenu().add("Delete");
+        popup.getMenu().add(getString(R.string.edit));
+        popup.getMenu().add(getString(R.string.delete));
 
         popup.setOnMenuItemClickListener(item -> {
             String title = item.getTitle().toString();
-            if (title.equals("Edit")) {
+            String editText = getString(R.string.edit);
+            String deleteText = getString(R.string.delete);
+            
+            if (title.equals(editText)) {
                 showLabelOptionsDialog(label);
-            } else if (title.equals("Delete")) {
+            } else if (title.equals(deleteText)) {
                 confirmDeleteLabel(label);
             }
             return true;
@@ -260,19 +267,19 @@ public class HomeActivity extends AppCompatActivity {
     }
     private void confirmDeleteLabel(Label label) {
         new AlertDialog.Builder(this)
-                .setTitle("Delete label")
+                .setTitle(getString(R.string.delete_label))
                 .setMessage("Do you want to delete this label \"" + label.getName() + "\" ?")
-                .setPositiveButton("Delete", (dialog, which) -> {
+                .setPositiveButton(getString(R.string.delete), (dialog, which) -> {
                     labelViewModel.deleteLabel(label.getId());
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 
 
     private void showLabelOptionsDialog(Label label) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit the label");
+        builder.setTitle(getString(R.string.edit_the_label));
 
         final View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_label, null);
         EditText input = dialogView.findViewById(R.id.label_name_input);
@@ -280,16 +287,16 @@ public class HomeActivity extends AppCompatActivity {
 
         builder.setView(dialogView);
 
-        builder.setPositiveButton("Save", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.save), (dialog, which) -> {
             String newName = input.getText().toString().trim();
             if (!newName.isEmpty() && !newName.equals(label.getName())) {
                 labelViewModel.updateLabel(label.getId(), newName);
             } else {
-                Toast.makeText(this, "Name not changed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.name_not_changed), Toast.LENGTH_SHORT).show();
             }
         });
 
-        builder.setNegativeButton("Delete", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss());
         builder.show();
     }
 
@@ -371,23 +378,23 @@ public class HomeActivity extends AppCompatActivity {
 
     private void showCreateLabelDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Create a new label");
+        builder.setTitle(getString(R.string.create_a_new_label));
 
         final View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_label, null);
         builder.setView(dialogView);
 
-        builder.setPositiveButton("Create", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.create), (dialog, which) -> {
             EditText labelInput = dialogView.findViewById(R.id.label_name_input);
             String labelName = labelInput.getText().toString().trim();
 
             if (!labelName.isEmpty()) {
                 labelViewModel.createLabel(labelName);
             } else {
-                Toast.makeText(this, "Label's name cannot be empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.label_name_cannot_be_empty), Toast.LENGTH_SHORT).show();
             }
         });
 
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss());
         builder.show();
     }
 
@@ -449,10 +456,10 @@ public class HomeActivity extends AppCompatActivity {
     // Show confirmation dialog for logout
     private void showLogoutDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("logout")
-                .setMessage("are you sure you want to logout?")
-                .setPositiveButton("yes", (dialog, which) -> homeViewModel.logout())
-                .setNegativeButton("no", null)
+                .setTitle(getString(R.string.logout))
+                .setMessage(getString(R.string.logout_confirmation))
+                .setPositiveButton(getString(R.string.yes), (dialog, which) -> homeViewModel.logout())
+                .setNegativeButton(getString(R.string.no), null)
                 .show();
     }
 

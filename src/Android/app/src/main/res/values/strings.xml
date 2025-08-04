@@ -50,6 +50,55 @@
     <string name="star">Star</string>
     <string name="reply">Reply</string>
 
+    <!-- Toast messages -->
+    <string name="welcome_back">Welcome back, %1$s!</string>
+    <string name="welcome_back_user">Welcome back, User!</string>
+    <string name="mail_deleted">Mail deleted</string>
+    <string name="label_added">Label added</string>
+    <string name="label_removed">Label removed</string>
+    <string name="name_not_changed">Name not changed</string>
+    <string name="label_name_cannot_be_empty">Label\'s name cannot be empty</string>
+    <string name="no_label_to_add">No Label to add</string>
+    <string name="all_fields_required">All fields are required</string>
+    <string name="username_password_required">Username and Password are required</string>
+    <string name="please_select_gender">Please select a gender</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="permission_denied_images">Permission denied to read your images</string>
+    <string name="error_no_mail_to_reply">Error: No mail to reply to</string>
+    <string name="error_no_mail_to_forward">Error: No mail to forward</string>
+
+    <!-- Dialog titles and messages -->
+    <string name="delete_label">Delete label</string>
+    <string name="edit_the_label">Edit the label</string>
+    <string name="create_a_new_label">Create a new label</string>
+    <string name="logout">logout</string>
+    <string name="logout_confirmation">are you sure you want to logout?</string>
+    <string name="delete_this_mail">Delete this Mail</string>
+    <string name="add_a_label">Add a label</string>
+    <string name="remove_label_question">Remove the label ?</string>
+    <string name="remove_label_message">Remove the label \"%1$s\" of this mail ?</string>
+
+    <!-- Button text -->
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="create">Create</string>
+
+    <!-- Other UI text -->
+    <string name="no_labels">No labels</string>
+    <string name="you">You</string>
+    <string name="email_sent_successfully">Email sent successfully!</string>
+    <string name="registration_successful">Registration successful!</string>
+    <string name="error_adding_label">Error adding label: %1$s</string>
+    <string name="error_removing_label">Error removing label: %1$s</string>
+    <string name="error_colon">Error: %1$s</string>
+    <string name="error_while_editing_label">Error while editing label</string>
+    <string name="error_while_deleting_label">Error while deleting label</string>
+    <string name="network_failure">Network failure : %1$s</string>
+    <string name="network_error">Network Error : %1$s</string>
+
     <string-array name="gender_array">
         <item>Male</item>
         <item>Female</item>
