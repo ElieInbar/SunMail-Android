@@ -38,6 +38,7 @@ public class ViewMailActivity extends AppCompatActivity {
     private MailViewModel mailViewModel;
     private LabelViewModel labelViewModel;
     private String senderName; // Store sender name for reply/forward
+    private String receiverName; // Store receiver name for display
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -61,6 +62,8 @@ public class ViewMailActivity extends AppCompatActivity {
         TextView body = findViewById(R.id.text_body);
         TextView senderMail = findViewById(R.id.text_sender_email);
         TextView avatar = findViewById(R.id.text_avatar);
+        TextView receiver = findViewById(R.id.text_receiver);
+        TextView receiverMail = findViewById(R.id.text_receiver_email);
         FlowLayout labelContainer = findViewById(R.id.label_container);
 
         // Set up the toolbar
@@ -73,18 +76,26 @@ public class ViewMailActivity extends AppCompatActivity {
         // Handle back navigation
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        // Retrieve sender's username from Intent
+        // Retrieve sender's and receiver's username from Intent
         senderName = (String) getIntent().getSerializableExtra("senderName");
-        String sunmail = senderName.concat("@sunmail.com");
+        receiverName = (String) getIntent().getSerializableExtra("receiverName");
+        String senderSunmail = senderName.concat("@sunmail.com");
+        String receiverSunmail = receiverName != null ? receiverName.concat("@sunmail.com") : "";
 
         // Populate UI with mail data if available
         if (mail != null) {
             subject.setText(mail.getSubject());
             sender.setText(senderName);
             body.setText(mail.getBody());
-            senderMail.setText(sunmail);
+            senderMail.setText(senderSunmail);
             avatar.setText(senderName.isEmpty() ? "?" : senderName.substring(0, 1).toUpperCase());
             avatar.setBackground(createCircleDrawable(getColorForUser(senderName)));
+            
+            // Set receiver information
+            if (receiverName != null) {
+                receiver.setText(receiverName);
+                receiverMail.setText(receiverSunmail);
+            }
         }
 
         // Setup Reply and Forward buttons

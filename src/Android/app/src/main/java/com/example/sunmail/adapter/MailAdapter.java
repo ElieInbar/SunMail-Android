@@ -93,15 +93,11 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
             if (senderName1 == null) senderName1 = senderId;
             intent.putExtra("senderName", senderName1);
 
-            // For drafts, also pass receiver name
-            if ("drafts".equals(currentLabel) && mail.getReceiver() != null) {
+            // Always pass receiver name
+            if (mail.getReceiver() != null) {
                 String receiverName = userMap.get(mail.getReceiver());
                 if (receiverName == null) {
-                    // Fallback: convert ID to email format
-                    receiverName = mail.getReceiver() + "@sunmail.com";
-                } else if (!receiverName.contains("@")) {
-                    // Convert username to email format
-                    receiverName = receiverName + "@sunmail.com";
+                    receiverName = mail.getReceiver();
                 }
                 intent.putExtra("receiverName", receiverName);
             }

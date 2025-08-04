@@ -48,17 +48,29 @@ public class MailViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Mail>> getInboxMails(String myUserId) {
-        MutableLiveData<List<Mail>> inboxMails = new MutableLiveData<>();
+        return getFilteredMails(myUserId, "inbox");
+    }
+
+    public LiveData<List<Mail>> getFilteredMails(String myUserId, String label) {
+        MutableLiveData<List<Mail>> filteredMails = new MutableLiveData<>();
         getMails().observeForever(allMails -> {
             List<Mail> filtered = new ArrayList<>();
             for (Mail mail : allMails) {
-                if (myUserId.equals(mail.getReceiver())) {
-                    filtered.add(mail);
+                if ("sent".equals(label)) {
+                    // For "sent" label: show emails where current user is the sender
+                    if (myUserId.equals(mail.getSender())) {
+                        filtered.add(mail);
+                    }
+                } else {
+                    // For other labels: show emails where current user is the receiver
+                    if (myUserId.equals(mail.getReceiver())) {
+                        filtered.add(mail);
+                    }
                 }
             }
-            inboxMails.setValue(filtered);
+            filteredMails.setValue(filtered);
         });
-        return inboxMails;
+        return filteredMails;
     }
 
     public LiveData<String> getDeleteResult() {
