@@ -7,7 +7,7 @@
 
     <EditText
         android:id="@+id/label_name_input"
-        android:hint="Label's name"
+        android:hint="@string/label_s_name"
         android:inputType="textCapWords"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

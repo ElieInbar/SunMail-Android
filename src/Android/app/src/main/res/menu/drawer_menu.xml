@@ -7,50 +7,50 @@
         <item
             android:id="@+id/nav_inbox"
             android:icon="@drawable/ic_inbox"
-            android:title="Inbox" />
+            android:title="@string/inbox" />
         <item
             android:id="@+id/nav_starred"
             android:icon="@drawable/ic_starred"
-            android:title="Starred" />
+            android:title="@string/starred" />
         <item
             android:id="@+id/nav_important"
             android:icon="@drawable/ic_important"
-            android:title="Important" />
+            android:title="@string/important" />
         <item
             android:id="@+id/nav_sent"
             android:icon="@drawable/ic_sent"
-            android:title="Sent" />
+            android:title="@string/sent" />
         <item
             android:id="@+id/nav_drafts"
             android:icon="@drawable/ic_drafts"
-            android:title="Drafts" />
+            android:title="@string/drafts" />
         <item
             android:id="@+id/nav_all_mail"
             android:icon="@drawable/ic_all_mail"
-            android:title="All Mail" />
+            android:title="@string/all_mail" />
         <item
             android:id="@+id/nav_spam"
             android:icon="@drawable/ic_spam"
-            android:title="Spam" />
+            android:title="@string/spam" />
         <item
             android:id="@+id/nav_trash"
             android:icon="@drawable/ic_trash"
-            android:title="Trash" />
+            android:title="@string/trash" />
 
         <item
             android:id="@+id/nav_create_label"
             android:icon="@drawable/ic_label"
-            android:title="Create a label" />
+            android:title="@string/create_a_label" />
 
         <item
             android:id="@+id/nav_theme"
             android:icon="@drawable/ic_theme"
-            android:title="Change Theme" />
+            android:title="@string/change_theme" />
 
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_help"
-            android:title="Help" />
+            android:title="@string/help" />
 
     </group>
 </menu>

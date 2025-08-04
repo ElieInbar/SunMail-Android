@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +53,8 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
     public void onBindViewHolder(MailViewHolder holder, int position) {
         Mail mail = mailList.get(position);
 
-        // Avatar (première lettre du sender)
-        String senderId = mail.getSender(); // ou getSenderId(), adapte à ton modèle Mail
+        String senderId = mail.getSender();
 
-        // Récupère le nom depuis la map, sinon fallback sur l'id (jamais null !)
         String senderName = userMap.get(senderId);
         if (senderName == null) senderName = senderId;
 
@@ -72,14 +69,6 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
         holder.subject.setText(mail.getSubject());
         holder.snippet.setText(mail.getSnippet());
 
-//        // Affichage étoile
-//        if (mail.isStarred()) {
-//            holder.star.setImageResource(R.drawable.ic_star_filled_24); // Mets ici le drawable étoile pleine
-//        } else {
-//            holder.star.setImageResource(R.drawable.ic_star_border_24); // Mets ici le drawable étoile vide
-//        }
-
-        // Apparence "unread"
         if (!mail.isRead()) {
             // For unread mails, keep the CardView background but make text bold
             holder.subject.setTypeface(null, Typeface.BOLD);
@@ -130,7 +119,6 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
     // ViewHolder enrichi
     static class MailViewHolder extends RecyclerView.ViewHolder {
         TextView sender, subject, snippet, avatar;
-        ImageView star;
 
         MailViewHolder(View itemView) {
             super(itemView);
@@ -138,7 +126,6 @@ public class MailAdapter extends RecyclerView.Adapter<MailAdapter.MailViewHolder
             subject = itemView.findViewById(R.id.text_subject);
             snippet = itemView.findViewById(R.id.text_snippet);
             avatar = itemView.findViewById(R.id.text_avatar);
-//            star    = itemView.findViewById(R.id.image_star);
         }
     }
 

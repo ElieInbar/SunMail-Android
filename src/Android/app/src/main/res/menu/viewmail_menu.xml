@@ -4,30 +4,30 @@
     <item
         android:id="@+id/action_edit_draft"
         android:icon="@drawable/ic_edit_draft"
-        android:title="Edit Draft"
+        android:title="@string/edit_draft"
         app:showAsAction="always"
         android:visible="false" />
     <item
         android:id="@+id/action_delete"
         android:icon="@drawable/ic_trash"
-        android:title="Delete"
+        android:title="@string/delete"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_add_label"
-        android:title="Add Label"
+        android:title="@string/add_label"
         android:icon="@drawable/ic_add"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_toggle_star"
-        android:title="Star"
+        android:title="@string/star"
         android:icon="@drawable/ic_starred"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_toggle_important"
-        android:title="Important"
+        android:title="@string/important"
         android:icon="@drawable/ic_important"
         app:showAsAction="ifRoom" />
 </menu>

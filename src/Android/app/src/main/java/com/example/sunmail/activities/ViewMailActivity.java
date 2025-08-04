@@ -1,5 +1,6 @@
 package com.example.sunmail.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -38,6 +39,7 @@ public class ViewMailActivity extends AppCompatActivity {
     private LabelViewModel labelViewModel;
     private String senderName; // Store sender name for reply/forward
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Apply saved theme before setting content view
@@ -98,7 +100,6 @@ public class ViewMailActivity extends AppCompatActivity {
             }
         });
 
-        // Observe ajout / suppression de label
         mailViewModel.getLabelAddStatus().observe(this, status -> {
             if ("success".equals(status)) {
                 Toast.makeText(this, "Label added", Toast.LENGTH_SHORT).show();

@@ -18,13 +18,11 @@
         android:minHeight="72dp"
         android:padding="14dp">
 
-        <!-- Avatar (première lettre) -->
         <TextView
             android:id="@+id/text_avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:gravity="center"
-            android:text="M"
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:background="@drawable/avatar_background"
@@ -41,7 +39,6 @@
             android:textSize="15sp" />
 
 
-        <!-- Sujet -->
         <TextView
             android:id="@+id/text_subject"
             android:layout_width="wrap_content"
@@ -54,7 +51,6 @@
             android:maxLines="1"
             android:ellipsize="end" />
 
-        <!-- Snippet -->
         <TextView
             android:id="@+id/text_snippet"
             android:layout_width="wrap_content"
